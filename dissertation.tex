@@ -48,6 +48,7 @@
 \documentclass[journal]{IEEEtran}
 
 \usepackage{graphicx}
+\usepackage[utf8]{inputenc}
 % Insert additional usepackage commands here
 
 \begin{document}
@@ -58,11 +59,11 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Your title here}
+\title{Client side prediction mechanisms in networked multiplayer first person shooter games}
 %
 %
 % author name
-\author{Your name here}
+\author{Richard Steele}
 
 % The paper headers -- please do not change these, but uncomment one of them as appropriate
 % Uncomment this one for COMP320
@@ -76,7 +77,7 @@
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-The abstract goes here.
+This paper critically examines the effectiveness of the current methods of client side prediction in networked multiplayer digital games, specifically first person shooter games where the accuracy of each game agent's behaviour is critical to the player's experience. The de facto use of \textit{dead reckoning} is accepted as a standard tool to help minimise the number of required network updates, but its results can be error prone which are a detriment to the player's experience. This paper looks at the currently used dead reckoning algorithms and suggests using further data about the game state to provide a more accurate estimation of a game agent's location and behaviour at a future time. Knowledge about the layout of a level is used to dynamically alter the threshold of the dead reckoning algorithm's allowance to better reflect an agent's behaviour at critical points of the game by sending an increased amount of player updates.
 \end{abstract}
 
 \section{Introduction}
@@ -95,13 +96,101 @@ The abstract goes here.
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
-for your final year project dissertation.
-Use this template for your literature review and proposal in COMP320,
-which you will then expand into your dissertation in COMP360.
 
-Insert more sections here.
-Use BibTeX~\cite{bibtex} to cite relevant literature.
+\IEEEPARstart{W}{ith} modern networked multiplayer digital games where the game state must be updated often, it is impractical to update each client's representation of the game state every frame. Instead, \textit{dead reckoning} methods are used to predict future states of the game, and network updates are needed only when the actual behaviour differs from the predicted behaviour by a preset threshold. Whilst effective at greatly reducing the required network updates and reducing the impact of network transmission delay \cite{pantel2002suitability}, impossible behaviours such as tunnelling, or improbable behaviours counter intuitive to the game are possible. This paper proposes that by using further information about the game state, such as level layout, an agent's behaviour can be predicted with greater accuracy to help minimise unwanted behaviour.
+
+Previous papers in the context of games describe dead reckoning as a measure to account for network latency compensation. Few expand beyond this and are generally concerned with how best to marry the predicted state with the actual state by interpolation or rolling back. This paper explores improving the accuracy of the simulation by dynamically adjusting the threshold allowed by traditional dead reckoning methods.
+
+The research question that this paper addresses is: can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved in accuracy by using player modelling and information about the game's state to more reliably predict a player's actions?
+
+
+\section{Background}
+
+Even if so, network latency would cause the received data to be slightly behind, and the nature of sending the packets unreliably \cite{cronin2001distributed} may incur lost packets resulting in no update data for that agent. Instead, \textit{dead reckoning} methods are used to simulate an agent's behaviour, allowing client-side prediction to reduce the impact of a network transmission delay \cite{pantel2002suitability}. When used effectively this can help to synchronise the game state across all clients. Dead reckoning can also compensate for lost packets by 
+
+
+
+multiplayer games where the game state is updated often, the effects of late or lost packets are minimised with the use of a simple dead reckoning algorithm. This can smooth trajectories between state updates, and also decrease the frequency of state transmission.
+
+\subsection{citations}
+
+Dead reckoning methods are based on a navigational technique of estimating one’s position based on a known starting point and velocity \cite{smed2002aspects}. In the simplest implementation, we take the last position we received on the network, and project it forward in time \cite{murphy2011believable}.
+
+allows to prolong the interval of message transmissions and abolish the network latency at the cost of data consistency \cite{smed2002aspects}
+
+Dead reckoning is used to to replace missing Application data unit ADUs \cite{diot1999distributed} - where ``most probably'' be
+
+
+% this paper looks good to cite for explanation of dr
+Globally synchronised clocks \cite{aggarwal2004accuracy}
+
+Leading a shooting mechanic to account for lag \cite{bernier2001latency}
+Having an authoritative server means that even if the client simulates different
+results than the server, the server’s results will eventually correct the client’s incorrect
+simulation \cite{bernier2001latency}
+player’s can turn instantaneously and apply unrealistic forces to create huge accelerations at arbitrary angles and you’ll see that the extrapolation is quite often incorrect \cite{bernier2001latency}
+
+% More specific fps stuff in here
+The performance of interactive applications often degrades significantly under variance in latency (or jitter), as well as latency \cite{beigbeder2004effects}
+
+Buckets or late updates may lead to repairing inconsistencies requiring a rollback which will cause more drastic position jumps \cite{cronin2002efficient}
+
+DR is a distributed approach that does not require a centralised server. Using a distributed approach is mandatory for many distributed virtual environments (DVEs) in order to avoid the well known problems of centralised systems such as increased latency, single-point-of-failure and lack of scalability \cite{mauve2000keep}
+
+The controller of an entity regularly checks whether the difference between the prediction and the actual state exceeds a certain threshold. If this is the case the controller of the entity transmits the state so that other applications may learn about the correct new state of the entity \cite{mauve2000keep}
+
+The player tracks both its actual position and the predicted position calculated with dead reckoning. An updated Entity State PDU is sent out on the network when the two postures differ by a predertimined error threshold, or when a fixed amount of time has passed since the last update (nominally 5 seconds) \cite{mills1992network}
+
+Previous synchronisation mechanisms such as bucket synchronisation and Time Warp are not well suited to the demands of a real-time multiplayer game. Trailing state synchronisation is designed specifically for real-time multiplayer games, and achieves better responsiveness and scalability while maintaining near-perfect consistency \cite{cronin2001distributed}
+
+area of interest filtering only sends a client information for entities that are within that player’s potential field of sight \cite{cronin2001distributed}
+
+In Quake the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}
+
+
+\subsection{Next}
+
+Describe state of field in relation to literature
+Define the problem, grey lit for dead man can shoot gamasutra etc
+find papers and authors that support the position I'm taken.
+Commercial context - why important to have good solutions of the problem - see reviews? Metacritic
+Context for problem space
+A lot of fps have problems because of network problems, find reviews, quote popularity. See criticism.spread the assumptions across white and grey. Pull in grey lit and peer review. compare the milit/games.
+
+
+practical motivation
+
+Academic motivation
+
+Gaps in literature
+Dead reckoning algorithms only use information on the player's current and simulated location and velocity.
+
+tunnelling problem
+co cognition
+bots but intent needs to be carried across
+
+
+
+what is dr
+
+why have dr
+
+how when where
+
+What is good about it 
+What problems does it solve
+strengths
+
+What is bad about it
+weaknesses
+is it a problem
+
+propose solution
+
+\subsection{Lit review}
+
+
+\subsection{Methodology}
 
 \section{Conclusion}
 The conclusion goes here.
