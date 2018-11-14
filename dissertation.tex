@@ -49,6 +49,8 @@
 
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage{amsmath}
 % Insert additional usepackage commands here
 
 \begin{document}
@@ -59,7 +61,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Client side prediction methods in networked multiplayer first person shooter games}
+\title{Extending Client Side Prediction Methods in Networked Multiplayer First Person Shooter Games to Include Level Knowledge}
 %
 %
 % author name
@@ -94,15 +96,17 @@ This paper critically examines the effectiveness of the current methods of clien
 % Some journals put the first two words in caps:
 % \IEEEPARstart{T}{his demo} file is ....
 
-\IEEEPARstart{W}{ith} modern networked multiplayer digital games where the game state must be updated often, it is impractical to update each client's representation of the game state every frame. Instead, \textit{dead reckoning} algorithms are used to predict future states of the game, and network updates are needed only when the actual behaviour differs from the predicted behaviour by a preset threshold. While effective at greatly reducing the required network updates and reducing the impact of network transmission delay \cite{pantel2002suitability}, impossible behaviours such as tunnelling, or improbable behaviours counter intuitive to the game are possible. This paper proposes that by using further information about the game state, such as level layout, an agent's behaviour can be predicted with greater accuracy to help minimise unwanted behaviour.
+\IEEEPARstart{W}{ith} modern networked multiplayer digital games where the game state must be updated often, it is impractical to send and receive network updates on every frame. Instead, \textit{dead reckoning} algorithms are used to predict future states of the game, and network updates are needed only when the actual behaviour differs from the predicted behaviour by a threshold amount. This idea of an acceptance threshold accepts that the perception of an entity for all other clients on a network may differ to the actual state of that entity. While effective at greatly reducing the required network updates and reducing the impact of network transmission delay \cite{pantel2002suitability}, impossible behaviours such as tunnelling (projecting a position past a barrier), or improbable behaviours counter intuitive to the game are possible. This paper proposes that by using further information about the game state, such as level layout, an agent's behaviour can be predicted with greater accuracy to help minimise unwanted behaviour.
 
-Previous papers in the context of games describe dead reckoning as a measure to account for network latency compensation. Few expand beyond this and are generally concerned with how best to marry the predicted state with the actual state by interpolation or rolling back. This paper explores improving the accuracy of the simulation by dynamically adjusting the threshold allowed by traditional dead reckoning methods to prompt more frequent state updates at critical times where the greatest accuracy is required.
+Previous papers in the context of games describe dead reckoning as a measure to account for network latency compensation. Few expand beyond this and are concerned generally with how best to marry the predicted state with the actual state by interpolation or rolling back. This paper explores improving the accuracy of the simulation by dynamically adjusting the threshold allowed by traditional dead reckoning methods to prompt more frequent state updates at critical times when the greatest accuracy is required.
+
+It is important to note that not all networked multiplayer games suffer from client side prediction problems. For instance turn based games consider each client sequentially. Where there is no scope or benefit for a player to react immediately, no measures must be taken to account for problems incurred by some milliseconds lost in transmission. These issues are prevalent in fast paced competitive games such as racing games, or the first person shooter genre. This paper then bases its study upon the first person shooter game genre, sometimes referred to as \textit{twitch} shooters. The need to respond quickly to other clients' perceived actions is critical to the player experience, therefore it is crucial that those actions are shown as accurately as possible.
 
 The research question that this paper addresses is: can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved in accuracy by using player modelling and information about the game's state to more reliably predict a player's actions?
 
 \section{Background}
 
-This literature review first confirms the definition of client side prediction, the problems that it solves, and the trade off against absolute accuracy. Dead reckoning is explained and explored next with a focus on the real world applications and techniques of its use within games. Finally, alternative methods of client side prediction are explained and acknowledged.
+This literature review first confirms the definition of client side prediction, the problems that it solves, and the trade off against absolute accuracy. Dead reckoning is explained and explored next with a focus on the real world applications and techniques of its use within games. Finally, alternative methods of solving the the problems associated with network latency are explained and acknowledged.
 
 \subsection{Client side prediction}
 
@@ -110,28 +114,80 @@ Networked multiplayer games are defined as sharing a game space between multiple
 
 Problems can occur when:
 \begin{itemize}
-    %\item simultaneous conflicting actions are performed by many clients.
     \item the updated information is received too late (network latency)
     \item the updated information is not received (packet loss)
+    \item the action is not successful (simultaneous conflicting actions are performed by many clients).
 \end{itemize}
 
-Network latency forms the primary bottleneck for online game performance with an acceptable value being under 100 milliseconds \cite{smed2002aspects} and worst case overall latencies claimed to be up over 1 second \cite{claypool2006latency}. Performance often also degrades significantly under variance in latency (or \textit{Jitter}) \cite{beigbeder2004effects} \cite{dick2005analysis}. To counter this, each client uses dead reckoning to predict the behaviour of each agent, and to project forward the game state by this time amount to maintain a consistency of all entities states throughout.
-The jitter must be kept account of as this time amount can be subject to change.
+Network latency forms the primary bottleneck for online game performance with an acceptable value being under 100 milliseconds \cite{smed2002aspects} and worst case overall latencies claimed to be up over 1 second \cite{claypool2006latency}. To counter this, each client takes the slightly old network state update that it receives and brings it approximately up to date through extrapolation before displaying it to the user. Performance degrades significantly under variance in latency (or \textit{Jitter}) \cite{beigbeder2004effects} \cite{dick2005analysis}. The jitter effect must be continually accounted for as the delta time value between updates can be subject to change. As such, the current time in which an action is performed is included with the update packet of data sent and received by clients, and forms an integral part of the prediction algorithm. The latency time difference must be continuously evaluated by sending and receiving time stamped packets to maintain a correct delta time value \cite{glazer2015multiplayer}.
 
-Given the vast quantity and unreliable nature \cite{cronin2001distributed} of the messages being sent, packet loss must be planned for. The same dead reckoning methods used to account for network latency and outlined in \textit{B.} can be used to replace missing packets of information, or application data units (ADUs) \cite{diot1999distributed}, to supply a prediction of where the ADU's agent will ``most probably'' be.
+Given the vast quantity and unreliable nature of the messages being sent \cite{cronin2001distributed}, packet loss must be planned for. The same dead reckoning methods used to account for network latency, and outlined in \textit{B.} can be used to replace missing packets of information, or application data units (ADUs) \cite{diot1999distributed} sometimes referred to as protocol data units (PDUs) \cite{dis1998ieee}, to supply a prediction of where the ADU's agent will ``most probably'' be at a given time.
 
 \subsection{Dead reckoning}
 
 Dead reckoning methods are based on a navigational technique of estimating one’s position based on a known starting point and velocity \cite{smed2002aspects}. In the simplest implementation, we take the last position we received on the network, and project it forward in time with at its last known velocity \cite{murphy2011believable}.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{DR1.png}
+    \caption{Image sourced from \cite{murphy2011believable}}
+    \label{fig:dr1}
+\end{figure}
+
+This simple representation of projecting forward is correct if an agent has linear movement and constant velocity. However, agents in a first person shooter game often have complex non linear movements which will need to be checked for and accommodated. Real world applications of linear dead reckoning also suffer with having to account for unpredictable behaviour e.g. drift due to wind or wheel slippage \cite{chung2001accurate} \cite{ojeda2004experimental}. The techniques used for managing these behaviours are transferable to the problems of dead reckoning networked multiplayer game agents with complex behaviour.
+
+In 1983, with substantial support from the U.S. army, the Defense Advanced Research Projects Agency (DARPA) initiated the Simulator Networking (SIMNET) program which developed dead reckoning techniques to support a virtual world to train soldiers \cite{calvin1993simnet}. Their approach to networking solutions has been incorporated into the Distributed Interactive Simulation (DIS) standard which is now an IEEE standard \cite{dis1998ieee}. It outlines the use of a PDU to help dead reckoning handle complex behaviour \cite{mccarty1994virtual}.
+ 
+Each client maintains a dead reckoned model of itself that corresponds to the model used by other clients to ``see'' its represented agent. The client must regularly check whether the difference between the predicted state calculated with dead reckoning that all clients share and the actual state exceeds a certain threshold. If this is the case, the client is then responsible to generate an updated entity state for the dead reckoning algorithm to apply to the model. Then send that updated state to all clients on the network to learn about the correct new state of the entity to then use to update their own model of that client's agent \cite{calvin1993simnet} \cite{mauve2000keep}. This also happens when a fixed amount of time has passed since the last update (normally 5 seconds) \cite{mills1992network}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{Threshold1.png}
+    \caption{Image sourced from \cite{aronson1997gamasutra}}
+    \label{fig:threshold}
+\end{figure}
+
+Were this updated information used immediately, the modelled entity would appear to jump (fig. \ref{fig:threshold}). Instead, the dead reckoning algorithm uses interpolation and projective velocity blending \cite{murphy2011believable} to tend towards and eventually reconcile it's own dead reckoned model with the newly updated state information (fig. \ref{fig:dr2}, fig. \ref{fig:dr3}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DR2.png}
+    \caption{Image sourced from \cite{murphy2011believable}}
+    \label{fig:dr2}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{DR3.png}
+    \caption{Image sourced from \cite{murphy2011believable}}
+    \label{fig:dr3}
+\end{figure}
+
+
+\begin{equation} \label{eq1}
+    \begin{split}
+       { $$ { Q_t & = {P_0^'} + {V_0^'} T + \frac{1}{2} {A_0^'} T^2 } $$ }\\
+    \end{split}
+\end{equation}
+
+\begin{equation} \label{eq2}
+    \begin{split}
+        $$ V_b & = V_0 + ({V_0^'} - {V_0}) \Hat{T} $$ \\
+        $$ P_t & = P_0 + {V_b}{T_b} + \frac{1}{2} {A_0^'} {T_t^2} $$ \\
+        $$ {P_t^'} & = {P_0^'} + {V_0^'}{T_t} + \frac{1}{2} {A_0^'} {T_t^2} $$ \\
+        $$ Q_t & = P_t + ({P_t^'} - P_t ) \Hat{T} $$
+    \end{split}
+\end{equation}
+\cite{murphy2011believable} \\ \\
+\ref{eq1} Linear dead reckoning as shown in fig \ref{fig:dr1}. $P_0^'$ is the initial position of the entity. $V_0^'$ is its velocity. $A_0^'$ is its acceleration. $Q_t$ is its dead reckoned position at time $T$.  \\ \\
+\ref{eq2} Projective velocity blending as shown in fig \ref{fig:dr2} and fig \ref{fig:dr3} \\ \\
 
 
 
 
-The player tracks both its actual position and the predicted position calculated with dead reckoning. An updated Entity State PDU is sent out on the network when the two postures differ by a predertimined error threshold, or when a fixed amount of time has passed since the last update (nominally 5 seconds) \cite{mills1992network}
+It is apparent that the blending may result in compromising behaviour. Demonstrated in first person shooter games as appearing to other players in a vulnerable position outside of cover, or moving through an impenatrable area as defined by the game's movement rules.
 
-The controller of an entity regularly checks whether the difference between the prediction and the actual state exceeds a certain threshold. If this is the case the controller of the entity transmits the state so that other applications may learn about the correct new state of the entity \cite{mauve2000keep}
-
+Dead reckoning is an \textit{optimistic algorithm}. It assumes it is correct  and when it is not, it must adjust itself.
 
 
 \subsection{What else can we do?}
@@ -175,11 +231,16 @@ Previous synchronisation mechanisms such as bucket synchronisation and Time Warp
 \subsection{Next}
 
 Describe state of field in relation to literature
+
 Define the problem, grey lit for dead man can shoot gamasutra etc
-find papers and authors that support the position I'm taken.
+
+find papers and authors that support the position I'm taking.
+
 Commercial context - why important to have good solutions of the problem - see reviews? Metacritic
+
 Context for problem space
-A lot of fps have problems because of network problems, find reviews, quote popularity. See criticism.spread the assumptions across white and grey. Pull in grey lit and peer review. compare the milit/games.
+
+A lot of fps have problems because of network problems, find reviews, quote popularity. See criticism.spread the assumptions across white and grey. Pull in grey lit and peer review. \cite{solaire2016reddit} \cite{hp2015bungie}
 
 
 practical motivation
@@ -211,14 +272,6 @@ is it a problem
 
 propose solution
 
-\subsection{Lit review}
-
-
-\subsection{Methodology}
-
-\section{Conclusion}
-The conclusion goes here.
-
 % references section
 
 \bibliographystyle{IEEEtran}
@@ -226,9 +279,9 @@ The conclusion goes here.
 
 % Appendices
 
-\appendices
-\section{First appendix}
-Appendices are optional. Delete or comment out this part if you do not need them.
+%\appendices
+%\section{First appendix}
+%Appendices are optional. Delete or comment out this part if you do not need them.
 
 % that's all folks
 \end{document}
