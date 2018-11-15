@@ -61,7 +61,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Extending Client Side Prediction Methods in Networked Multiplayer First Person Shooter Games to Include Level Knowledge}
+\title{Extending Client Side Prediction Methods in Networked Multiplayer First Person Shooter Games to Include Game State Information}
 %
 %
 % author name
@@ -102,7 +102,7 @@ Previous papers in the context of games describe dead reckoning as a measure to 
 
 It is important to note that not all networked multiplayer games suffer from client side prediction problems. For instance turn based games consider each client sequentially. Where there is no scope or benefit for a player to react immediately, no measures must be taken to account for problems incurred by some milliseconds lost in transmission. These issues are prevalent in fast paced competitive games such as racing games, or the first person shooter genre. This paper then bases its study upon the first person shooter game genre, sometimes referred to as \textit{twitch} shooters. The need to respond quickly to other clients' perceived actions is critical to the player experience, therefore it is crucial that those actions are shown as accurately as possible.
 
-The research question that this paper addresses is: can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved in accuracy by using player modelling and information about the game's state to more reliably predict a player's actions?
+The research question that this paper addresses is: how can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved?
 
 \section{Background}
 
@@ -119,7 +119,7 @@ Problems can occur when:
     \item the action is not successful (simultaneous conflicting actions are performed by many clients).
 \end{itemize}
 
-Network latency forms the primary bottleneck for online game performance with an acceptable value being under 100 milliseconds \cite{smed2002aspects} and worst case overall latencies claimed to be up over 1 second \cite{claypool2006latency}. To counter this, each client takes the slightly old network state update that it receives and brings it approximately up to date through extrapolation before displaying it to the user. Performance degrades significantly under variance in latency (or \textit{Jitter}) \cite{beigbeder2004effects} \cite{dick2005analysis}. The jitter effect must be continually accounted for as the delta time value between updates can be subject to change. As such, the current time in which an action is performed is included with the update packet of data sent and received by clients, and forms an integral part of the prediction algorithm. The latency time difference must be continuously evaluated by sending and receiving time stamped packets to maintain a correct delta time value \cite{glazer2015multiplayer}.
+Network latency forms the primary bottleneck for online game performance with an acceptable value being under 100 milliseconds \cite{smed2002aspects} and worst case overall latencies claimed to be up over 1 second \cite{claypool2006latency}. To counter this, each client takes the slightly old network state update that it receives and brings it approximately up to date through extrapolation before displaying it to the user. Performance degrades significantly under variance in latency (or \textit{Jitter}) \cite{beigbeder2004effects} \cite{dick2005analysis}. The jitter effect must be continually accounted for as the delta time value between updates can be subject to change. As such, the current time in which an action is performed is included with the update packet of data sent and received by clients, and forms an integral part of the prediction algorithm. The latency time difference must be continuously evaluated by sending and receiving time stamped packets to maintain a correct delta time value \cite{glazer2015multiplayer}, however manipulating these time stamps is an opportunity for cheating \cite{jamin2003cheat} so must be secure from interference or if using a centralised server then a globally synchronised clock can be used \cite{aggarwal2004accuracy}.
 
 Given the vast quantity and unreliable nature of the messages being sent \cite{cronin2001distributed}, packet loss must be planned for. The same dead reckoning methods used to account for network latency, and outlined in \textit{B.} can be used to replace missing packets of information, or application data units (ADUs) \cite{diot1999distributed} sometimes referred to as protocol data units (PDUs) \cite{dis1998ieee}, to supply a prediction of where the ADU's agent will ``most probably'' be at a given time.
 
@@ -136,13 +136,13 @@ Dead reckoning methods are based on a navigational technique of estimating one�
 
 This simple representation of projecting forward is correct if an agent has linear movement and constant velocity. However, agents in a first person shooter game often have complex non linear movements which will need to be checked for and accommodated. Real world applications of linear dead reckoning also suffer with having to account for unpredictable behaviour e.g. drift due to wind or wheel slippage \cite{chung2001accurate} \cite{ojeda2004experimental}. The techniques used for managing these behaviours are transferable to the problems of dead reckoning networked multiplayer game agents with complex behaviour.
 
-In 1983, with substantial support from the U.S. army, the Defense Advanced Research Projects Agency (DARPA) initiated the Simulator Networking (SIMNET) program which developed dead reckoning techniques to support a virtual world to train soldiers \cite{calvin1993simnet}. Their approach to networking solutions has been incorporated into the Distributed Interactive Simulation (DIS) standard which is now an IEEE standard \cite{dis1998ieee}. It outlines the use of a PDU to help dead reckoning handle complex behaviour \cite{mccarty1994virtual}.
+In 1983, with substantial support from the U.S. army, the Defense Advanced Research Projects Agency (DARPA) initiated the Simulator Networking (SIMNET) program which developed dead reckoning techniques to support a virtual world to train soldiers \cite{calvin1993simnet}. Their approach to networking solutions has been incorporated into the Distributed Interactive Simulation (DIS) standard which is now an IEEE standard \cite{dis1998ieee}. It outlines the use of a PDU to help dead reckoning handle complex behaviour \cite{mccarty1994virtual}. It is worth remembering however that DIS was designed for use by a small number of players (less than 50), and the inclusive PDU model can be criticised for holding redundant data \cite{henderson2001latency}.
  
 Each client maintains a dead reckoned model of itself that corresponds to the model used by other clients to ``see'' its represented agent. The client must regularly check whether the difference between the predicted state calculated with dead reckoning that all clients share and the actual state exceeds a certain threshold. If this is the case, the client is then responsible to generate an updated entity state for the dead reckoning algorithm to apply to the model. Then send that updated state to all clients on the network to learn about the correct new state of the entity to then use to update their own model of that client's agent \cite{calvin1993simnet} \cite{mauve2000keep}. This also happens when a fixed amount of time has passed since the last update (normally 5 seconds) \cite{mills1992network}.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=1.0\linewidth]{Threshold1.png}
+    \includegraphics[width=0.7\linewidth]{Threshold1.png}
     \caption{Image sourced from \cite{aronson1997gamasutra}}
     \label{fig:threshold}
 \end{figure}
@@ -151,14 +151,14 @@ Were this updated information used immediately, the modelled entity would appear
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\linewidth]{DR2.png}
+    \includegraphics[width=0.7\linewidth]{DR2.png}
     \caption{Image sourced from \cite{murphy2011believable}}
     \label{fig:dr2}
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\linewidth]{DR3.png}
+    \includegraphics[width=0.7\linewidth]{DR3.png}
     \caption{Image sourced from \cite{murphy2011believable}}
     \label{fig:dr3}
 \end{figure}
@@ -166,7 +166,7 @@ Were this updated information used immediately, the modelled entity would appear
 
 \begin{equation} \label{eq1}
     \begin{split}
-       { $$ { Q_t & = {P_0^'} + {V_0^'} T + \frac{1}{2} {A_0^'} T^2 } $$ }\\
+       { $$ { Q_t & = {P_0^'} + {V_0^'} T + \frac{1}{2} {A_0^'} T^2 } $$ } \\
     \end{split}
 \end{equation}
 
@@ -182,50 +182,71 @@ Were this updated information used immediately, the modelled entity would appear
 \ref{eq1} Linear dead reckoning as shown in fig \ref{fig:dr1}. $P_0^'$ is the initial position of the entity. $V_0^'$ is its velocity. $A_0^'$ is its acceleration. $Q_t$ is its dead reckoned position at time $T$.  \\ \\
 \ref{eq2} Projective velocity blending as shown in fig \ref{fig:dr2} and fig \ref{fig:dr3} \\ \\
 
+(Explain equations here)
 
 
 
-It is apparent that the blending may result in compromising behaviour. Demonstrated in first person shooter games as appearing to other players in a vulnerable position outside of cover, or moving through an impenatrable area as defined by the game's movement rules.
+\subsection{discussion}
 
-Dead reckoning is an \textit{optimistic algorithm}. It assumes it is correct  and when it is not, it must adjust itself.
+The two part purpose of client side prediction is to maintain an up to date game state for clients in the case of late or lost packets, and to use prediction algorithms to reduce required network updates. A distributed virtual environment (DVE) could further reduce packet updates by filtering for an area of interest. Only sending a client's information for entities that are within that player’s potential field of sight \cite{cronin2001distributed}. However, this requires previous knowledge of all entity positions so a two pass approach would be needed to determine which entities would be affected by a state change, and then to update those clients.
+
+Laurent Gautier and Christophe Diot propose that late packets due to network latency may be accommodated by the client by introducing a local presentation delay to provide a consistent, distributed state \cite{gautier1998design}. However, these increase the application-level delay even more. While acceptable for their MiMaze maze navigation project, it is unsuitable for the fast paced style of first person shooter games.
+
+While the simplest dead reckoning algorithm provides a linear vector approximation based on velocity, we have shown above that interpolation and projective velocity blending can be used to smooth trajectories between state updates tending towards the correct representation. James M. Van Verth and Lars M. Bishop provide a method to to sample and project cubic bezier spline curves \cite{van2008essential} but these are shown to be slightly less accurate than the velocity blending technique shown above by Curtiss Murphy \cite{murphy2011believable}. It is a fundamental requirement for games that the state be smooth and believable which is why a curves are employed rather than a jump. These curves are shown to be accurate when inferred from polynomial modelling based on the Lagrange or Taylor series \cite{hanawa2006proposal}. But require multiple states from which to extrapolate an approximation. Packet loss can be greatly detrimental to this approach. Leading to small sample sizes coupled with potentially erratic movement of game players producing increasingly unlikely results. Player’s could turn instantaneously and apply unrealistic forces to create huge accelerations at arbitrary angles causing the extrapolation to be incorrect \cite{bernier2001latency}. A solution would be to provide back up copies of previous states in each PDU. A technique already employed in Quake where the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}.
+
+Dead reckoning is an \textit{optimistic algorithm}. It assumes it is correct  and when it is not, it must adjust itself. It is apparent that the blending of this adjustment may result in compromising behaviour. Demonstrated in first person shooter games as appearing to other players in a vulnerable position outside of cover, or moving through an impenetrable area as defined by the game's movement rules.
+
+The de facto method of dead reckoning entities' behaviours is a distributed approach that does not require a centralised server. Using a distributed approach is mandatory for many DVEs in order to avoid the well known problems of centralised systems such as increased latency, single-point-of-failure and lack of scalability \cite{mauve2000keep}. However, having a dedicated central authoritative server (or a single client nominated as such) means that even if a client simulates different results than the server, the server’s results will eventually correct the client’s incorrect simulation \cite{bernier2001latency}
+
+The literature shows a broad ...
+The challenges are ...
+This project attempts to focus current methods into ... more game related where information about the game state are globally known
 
 
-\subsection{What else can we do?}
 
-area of interest filtering only sends a client information for entities that are within that player’s potential field of sight \cite{cronin2001distributed}
+Talk about trade off
 
-In Quake the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}
+network latency would cause the received data to be slightly behind,
 
-Approaches which introduce a local presentation delay, e.g., as that used within MiMaze \cite{gautier1998design} have been developed to provide for a consistent, distributed state. However, these increase the application-level delay even more.
+Leading a shooting mechanic to account for lag \cite{bernier2001latency}
+
+smooth trajectories between state updates, and also decrease the frequency of state transmission.
+
+allows to prolong the interval of message transmissions and abolish the network latency at the cost of data consistency \cite{smed2002aspects}
+
+In the case of lost packets resulting in no update data for that agent. Instead, dead reckoning methods are used to simulate an agent's behaviour, allowing client-side prediction to reduce the impact of a network transmission delay \cite{pantel2002suitability}. When used effectively this can help to synchronise the game state across all clients.
+
+
+% this paper looks good to cite for explanation of dr
+
 
 Buckets or late updates may lead to repairing inconsistencies requiring a rollback which will cause more drastic position jumps \cite{cronin2002efficient}
 
+Previous synchronisation mechanisms such as bucket synchronisation and Time Warp are not well suited to the demands of a real-time multiplayer game. Trailing state synchronisation is designed specifically for real-time multiplayer games, and achieves better responsiveness and scalability while maintaining near-perfect consistency \cite{cronin2001distributed}
+
+
+Discuss state conflicts
+
+
+
+
+
+\subsection{Heat maps}
+
+Using game state information to adapt client side prediction is still in its infancy.
+
+visualise
+
+to aggregate PDU states at critical junctions
+
+This project uses ...
+
+\cite{bauckhage2014beyond}
 
 
 \section{Methodology}
 
-Even if so, network latency would cause the received data to be slightly behind, 
 
-In the case of lost packets resulting in no update data for that agent. Instead, dead reckoning methods are used to simulate an agent's behaviour, allowing client-side prediction to reduce the impact of a network transmission delay \cite{pantel2002suitability}. When used effectively this can help to synchronise the game state across all clients.
-
-multiplayer games where the game state is updated often, the effects of late or lost packets are minimised with the use of a simple dead reckoning algorithm. This can smooth trajectories between state updates, and also decrease the frequency of state transmission.
-
-\subsection{citations}
-
-allows to prolong the interval of message transmissions and abolish the network latency at the cost of data consistency \cite{smed2002aspects}
-
-
-
-% this paper looks good to cite for explanation of dr
-Globally synchronised clocks \cite{aggarwal2004accuracy}
-
-Leading a shooting mechanic to account for lag \cite{bernier2001latency}
-Having an authoritative server means that even if the client simulates different results than the server, the server’s results will eventually correct the client’s incorrect simulation \cite{bernier2001latency}
-player’s can turn instantaneously and apply unrealistic forces to create huge accelerations at arbitrary angles and you’ll see that the extrapolation is quite often incorrect \cite{bernier2001latency}
-
-DR is a distributed approach that does not require a centralised server. Using a distributed approach is mandatory for many distributed virtual environments (DVEs) in order to avoid the well known problems of centralised systems such as increased latency, single-point-of-failure and lack of scalability \cite{mauve2000keep}
-
-Previous synchronisation mechanisms such as bucket synchronisation and Time Warp are not well suited to the demands of a real-time multiplayer game. Trailing state synchronisation is designed specifically for real-time multiplayer games, and achieves better responsiveness and scalability while maintaining near-perfect consistency \cite{cronin2001distributed}
 
 
 \subsection{Next}
