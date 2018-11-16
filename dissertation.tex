@@ -106,7 +106,7 @@ The research question that this paper addresses is: how can client side predicti
 
 \section{Background}
 
-This literature review first confirms the definition of client side prediction, the problems that it solves, and the trade off against absolute accuracy. Dead reckoning is explained and explored next with a focus on the real world applications and techniques of its use within games. Finally, alternative methods of solving the the problems associated with network latency are explained and acknowledged.
+This literature review first confirms the definition of client side prediction, the problems that it solves, and the trade off against absolute accuracy. Dead reckoning is explained and explored with a focus on the real world applications and techniques of its use within games. Finally, alternative methods of solving the the problems associated with network latency are explained and acknowledged.
 
 \subsection{Client side prediction}
 
@@ -136,7 +136,7 @@ Dead reckoning methods are based on a navigational technique of estimating one�
 
 This simple representation of projecting forward is correct if an agent has linear movement and constant velocity. However, agents in a first person shooter game often have complex non linear movements which will need to be checked for and accommodated. Real world applications of linear dead reckoning also suffer with having to account for unpredictable behaviour e.g. drift due to wind or wheel slippage \cite{chung2001accurate} \cite{ojeda2004experimental}. The techniques used for managing these behaviours are transferable to the problems of dead reckoning networked multiplayer game agents with complex behaviour.
 
-In 1983, with substantial support from the U.S. army, the Defense Advanced Research Projects Agency (DARPA) initiated the Simulator Networking (SIMNET) program which developed dead reckoning techniques to support a virtual world to train soldiers \cite{calvin1993simnet}. Their approach to networking solutions has been incorporated into the Distributed Interactive Simulation (DIS) standard which is now an IEEE standard \cite{dis1998ieee}. It outlines the use of a PDU to help dead reckoning handle complex behaviour \cite{mccarty1994virtual}. It is worth remembering however that DIS was designed for use by a small number of players (less than 50), and the inclusive PDU model can be criticised for holding redundant data \cite{henderson2001latency}.
+In 1983, with substantial support from the U.S. army, the Defense Advanced Research Projects Agency (DARPA) initiated the Simulator Networking (SIMNET) program which developed dead reckoning techniques to support a virtual world to train soldiers \cite{calvin1993simnet}. Their approach to networking solutions has been incorporated into the Distributed Interactive Simulation (DIS) standard which is now an IEEE standard \cite{dis1998ieee}. It outlines the use of a PDU to help dead reckoning handle complex behaviour \cite{mccarty1994virtual}. It is worth remembering however that DIS was designed for use by a small number of players (less than 50), and the inclusive PDU model can be criticised for holding too much redundant data \cite{henderson2001latency}.
  
 Each client maintains a dead reckoned model of itself that corresponds to the model used by other clients to ``see'' its represented agent. The client must regularly check whether the difference between the predicted state calculated with dead reckoning that all clients share and the actual state exceeds a certain threshold. If this is the case, the client is then responsible to generate an updated entity state for the dead reckoning algorithm to apply to the model. Then send that updated state to all clients on the network to learn about the correct new state of the entity to then use to update their own model of that client's agent \cite{calvin1993simnet} \cite{mauve2000keep}. This also happens when a fixed amount of time has passed since the last update (normally 5 seconds) \cite{mills1992network}.
 
@@ -163,43 +163,70 @@ Were this updated information used immediately, the modelled entity would appear
     \label{fig:dr3}
 \end{figure}
 
+\begin{align}
+        Q_t & = {P'_0} + {V'_0} T + \frac{1}{2} {A'_0} T^2 \\
+        V_b &= V_0 + ({V'_0} - {V_0}) \Hat{T}  \\
+        P_t &= P_0 + {V_b}{T_b} + \frac{1}{2} {A'_0} {T_t^2}  \\
+        P'_t &= {P'_0} + {V'_0}{T_t} + \frac{1}{2}{A'_0}{T_t^2}\\
+        Q_t &= P_t + ({P'_t} - P_t ) \Hat{T} 
+\end{align}
 
-\begin{equation} \label{eq1}
-    \begin{split}
-       { $$ { Q_t & = {P_0^'} + {V_0^'} T + \frac{1}{2} {A_0^'} T^2 } $$ } \\
-    \end{split}
-\end{equation}
-
-\begin{equation} \label{eq2}
-    \begin{split}
-        $$ V_b & = V_0 + ({V_0^'} - {V_0}) \Hat{T} $$ \\
-        $$ P_t & = P_0 + {V_b}{T_b} + \frac{1}{2} {A_0^'} {T_t^2} $$ \\
-        $$ {P_t^'} & = {P_0^'} + {V_0^'}{T_t} + \frac{1}{2} {A_0^'} {T_t^2} $$ \\
-        $$ Q_t & = P_t + ({P_t^'} - P_t ) \Hat{T} $$
-    \end{split}
-\end{equation}
 \cite{murphy2011believable} \\ \\
-\ref{eq1} Linear dead reckoning as shown in fig \ref{fig:dr1}. $P_0^'$ is the initial position of the entity. $V_0^'$ is its velocity. $A_0^'$ is its acceleration. $Q_t$ is its dead reckoned position at time $T$.  \\ \\
-\ref{eq2} Projective velocity blending as shown in fig \ref{fig:dr2} and fig \ref{fig:dr3} \\ \\
+(1) Linear dead reckoning as shown in fig \ref{fig:dr1}. $P'_0$ is the initial position of the entity. $V'_0$ is its velocity. $A'_0$ is its acceleration. $Q_t$ is its dead reckoned position at time $T$.  \\ \\
+(2) etc... Projective velocity blending as shown in fig \ref{fig:dr2} and fig \ref{fig:dr3} \\ \\
+(3) \\
+(4) \\
+(5) \\
 
 (Explain equations here)
 
+\subsection{Interest modelling}
+
+\cite{yahyavi2011antreckoning}
+
+\cite{yahyavi2013interest}
+
+\cite{yahyavi2013towards}
+
+\cite{cai1999auto}
+
+\cite{jaya2016combining}
+
+\cite{larsson2016movement}
+
+\subsection{Heat maps}
+
+\cite{bauckhage2014beyond}
+
+\cite{kuipers1978modeling}
+
+Finally, to visualise the level data that this project uses to adjust it's client side prediction request rate...
+
+to aggregate PDU states at critical junctions
+
+Using game state information to adapt client side prediction is still in its infancy.
 
 
-\subsection{discussion}
+\subsection{Discussion}
 
-The two part purpose of client side prediction is to maintain an up to date game state for clients in the case of late or lost packets, and to use prediction algorithms to reduce required network updates. A distributed virtual environment (DVE) could further reduce packet updates by filtering for an area of interest. Only sending a client's information for entities that are within that player’s potential field of sight \cite{cronin2001distributed}. However, this requires previous knowledge of all entity positions so a two pass approach would be needed to determine which entities would be affected by a state change, and then to update those clients.
+The two part purpose of client side prediction is to maintain an up to date game state for clients in the case of late or lost packets, and to use prediction algorithms to reduce required network updates. A distributed virtual environment (DVE) could further reduce packet updates by filtering for an area of interest. Only sending a client's information for entities that are within that player’s potential field of sight \cite{cronin2001distributed}. However, this requires previous knowledge of all entity positions therefore a two pass approach would be needed to determine which entities would be affected by a state change, and then to update those clients.
 
-Laurent Gautier and Christophe Diot propose that late packets due to network latency may be accommodated by the client by introducing a local presentation delay to provide a consistent, distributed state \cite{gautier1998design}. However, these increase the application-level delay even more. While acceptable for their MiMaze maze navigation project, it is unsuitable for the fast paced style of first person shooter games.
+Laurent Gautier and Christophe Diot propose that late packets due to network latency may be accommodated by the client by introducing a local presentation delay to provide a consistent, distributed state \cite{gautier1998design}. However, these increase the application-level delay even more so. While acceptable for their MiMaze maze navigation project, it is unsuitable for the fast paced style of first person shooter games.
 
-While the simplest dead reckoning algorithm provides a linear vector approximation based on velocity, we have shown above that interpolation and projective velocity blending can be used to smooth trajectories between state updates tending towards the correct representation. James M. Van Verth and Lars M. Bishop provide a method to to sample and project cubic bezier spline curves \cite{van2008essential} but these are shown to be slightly less accurate than the velocity blending technique shown above by Curtiss Murphy \cite{murphy2011believable}. It is a fundamental requirement for games that the state be smooth and believable which is why a curves are employed rather than a jump. These curves are shown to be accurate when inferred from polynomial modelling based on the Lagrange or Taylor series \cite{hanawa2006proposal}. But require multiple states from which to extrapolate an approximation. Packet loss can be greatly detrimental to this approach. Leading to small sample sizes coupled with potentially erratic movement of game players producing increasingly unlikely results. Player’s could turn instantaneously and apply unrealistic forces to create huge accelerations at arbitrary angles causing the extrapolation to be incorrect \cite{bernier2001latency}. A solution would be to provide back up copies of previous states in each PDU. A technique already employed in Quake where the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}.
+While the simplest dead reckoning algorithm provides a linear vector approximation based on velocity, we have shown above that interpolation and projective velocity blending can be used to smooth trajectories between state updates tending towards the correct representation. James M. Van Verth and Lars M. Bishop provide a method to sample and project cubic bezier spline curves \cite{van2008essential} but these are shown to be slightly less accurate than the velocity blending technique shown above proposed by Curtiss Murphy \cite{murphy2011believable}. It is a fundamental requirement for believable games that the state transitions are smooth and believable, which is why curves are employed rather than a jump. These curves are shown to be accurate when inferred from polynomial modelling based on the Lagrange or Taylor series \cite{hanawa2006proposal}. But require multiple states from which to extrapolate an approximation. Packet loss can be greatly detrimental to this approach. Small sample sizes combined with potentially erratic movement of game players will likely produce unlikely results. For instance player’s could turn instantaneously and apply unrealistic forces to create huge accelerations at arbitrary angles \cite{bernier2001latency}. A solution would be to provide back up copies of previous states in each PDU to restore missing information. A technique already employed in Quake where the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}.
 
 Dead reckoning is an \textit{optimistic algorithm}. It assumes it is correct  and when it is not, it must adjust itself. It is apparent that the blending of this adjustment may result in compromising behaviour. Demonstrated in first person shooter games as appearing to other players in a vulnerable position outside of cover, or moving through an impenetrable area as defined by the game's movement rules.
 
 The de facto method of dead reckoning entities' behaviours is a distributed approach that does not require a centralised server. Using a distributed approach is mandatory for many DVEs in order to avoid the well known problems of centralised systems such as increased latency, single-point-of-failure and lack of scalability \cite{mauve2000keep}. However, having a dedicated central authoritative server (or a single client nominated as such) means that even if a client simulates different results than the server, the server’s results will eventually correct the client’s incorrect simulation \cite{bernier2001latency}
 
+
+----------------------------------
+
+
 The literature shows a broad ...
+
 The challenges are ...
+
 This project attempts to focus current methods into ... more game related where information about the game state are globally known
 
 
@@ -224,6 +251,12 @@ Buckets or late updates may lead to repairing inconsistencies requiring a rollba
 
 Previous synchronisation mechanisms such as bucket synchronisation and Time Warp are not well suited to the demands of a real-time multiplayer game. Trailing state synchronisation is designed specifically for real-time multiplayer games, and achieves better responsiveness and scalability while maintaining near-perfect consistency \cite{cronin2001distributed}
 
+Commercial context - why important to have good solutions of the problem - see reviews? Metacritic
+
+Context for problem space
+
+A lot of fps have problems because of network problems, find reviews, quote popularity. See criticism.spread the assumptions across white and grey. Pull in grey lit and peer review. \cite{solaire2016reddit} \cite{hp2015bungie}
+
 
 Discuss state conflicts
 
@@ -231,25 +264,25 @@ Discuss state conflicts
 
 
 
-\subsection{Heat maps}
-
-Using game state information to adapt client side prediction is still in its infancy.
-
-visualise
-
-to aggregate PDU states at critical junctions
-
-This project uses ...
-
-\cite{bauckhage2014beyond}
-
-
 \section{Methodology}
 
+Time. Is on my side, oh yes it is.
 
 
+% references section
 
-\subsection{Next}
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+% Appendices
+
+%\appendices
+%\section{First appendix}
+%Appendices are optional. Delete or comment out this part if you do not need them.
+
+% that's all folks
+\end{document}
+
 
 Describe state of field in relation to literature
 
@@ -257,11 +290,6 @@ Define the problem, grey lit for dead man can shoot gamasutra etc
 
 find papers and authors that support the position I'm taking.
 
-Commercial context - why important to have good solutions of the problem - see reviews? Metacritic
-
-Context for problem space
-
-A lot of fps have problems because of network problems, find reviews, quote popularity. See criticism.spread the assumptions across white and grey. Pull in grey lit and peer review. \cite{solaire2016reddit} \cite{hp2015bungie}
 
 
 practical motivation
@@ -292,17 +320,3 @@ weaknesses
 is it a problem
 
 propose solution
-
-% references section
-
-\bibliographystyle{IEEEtran}
-\bibliography{references}
-
-% Appendices
-
-%\appendices
-%\section{First appendix}
-%Appendices are optional. Delete or comment out this part if you do not need them.
-
-% that's all folks
-\end{document}
