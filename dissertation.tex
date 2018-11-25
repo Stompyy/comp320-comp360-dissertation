@@ -243,7 +243,11 @@ This paper argues in favour of bot representations as both a method to decrease 
 
 \section{Discussion}
 
-The two part purpose of client side prediction is to maintain an up to date game state for clients in the case of late or lost packets, and to use prediction algorithms to reduce required network updates. While the simplest dead reckoning algorithm provides a linear vector approximation based on velocity, we have shown above that interpolation and projective velocity blending can be used to smooth trajectories between state updates tending towards the correct representation. It is a fundamental requirement for believable games that the state transitions are smooth and believable, shown in figures as a curve tending towards the target rather than a jump. These curves are shown to be accurate when inferred from polynomial modelling based on the Lagrange or Taylor series \cite{hanawa2006proposal}. But require multiple states from which to extrapolate an approximation. Packet loss can be greatly detrimental to this approach. Small sample sizes combined with potentially erratic movement of game players will likely produce unlikely results. A solution would be to provide back up copies of previous states in each PDU to restore missing information. A technique already employed in Quake where the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}. James M. Van Verth and Lars M. Bishop provide a method to sample and project cubic bezier spline curves \cite{van2008essential} but these are shown to be slightly less accurate than the velocity blending technique shown above proposed by Curtiss Murphy \cite{murphy2011believable}. 
+The two part purpose of client side prediction is to maintain an up to date game state for clients in the case of late or lost packets, and to use prediction algorithms to reduce required network updates. While the simplest dead reckoning algorithm provides a linear vector approximation based on velocity, we have shown above that interpolation and projective velocity blending can be used to smooth trajectories between state updates tending towards the correct representation.
+
+Benjamin Kuipars states that the difficulty of a dead reckoning task should vary according to the number of turns in the route, while the error rate and magnitude should vary according to the departure from straight \cite{kuipers1978modeling}. So, we can infer that likewise when considering complex paths with many turns, to expect a larger error rate.
+
+It is a fundamental requirement for believable games that the state transitions and corrections are smooth and believable, shown in figures as a curve tending towards the target rather than a jump. These curves are shown to be accurate when inferred from polynomial modelling based on the Lagrange or Taylor series \cite{hanawa2006proposal}. But require multiple states from which to extrapolate an approximation. Packet loss can be greatly detrimental to this approach. Small sample sizes combined with potentially erratic movement of game players will likely produce unlikely results. A solution would be to provide back up copies of previous states in each PDU to restore missing information. A technique already employed in Quake where the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}. James M. Van Verth and Lars M. Bishop provide a method to sample and project cubic bezier spline curves \cite{van2008essential} but these are shown to be slightly less accurate than the velocity blending technique shown above proposed by Curtiss Murphy \cite{murphy2011believable}. 
 
 Dead reckoning is an \textit{optimistic algorithm}. It assumes it is correct  and when it is not, it must adjust itself. It is apparent that the blending of this adjustment may result in compromising behaviour. Demonstrated in first person shooter games as appearing to other players in a vulnerable position outside of cover, or moving through an impenetrable area as defined by the game's movement rules. Consider the velocity blending method shown in fig \ref{fig:dr3} and (6). A player could turn instantaneously and the algorithm would apply unrealistic forces to create huge accelerations at arbitrary angles \cite{bernier2001latency}. Large inconsistencies due to extremely late updates may even lead to repairs requiring a state rollback which will cause more drastic position jumps \cite{cronin2002efficient}. The resulting movement shown by the red line in fig \ref{fig:dr3} may fall outside the rules of the game. Either passing through untraversable locations such as through walls or over gaps, or into unlikely locations according to the game's rules such as into a vulnerable position outside of cover. Many networked multiplayer first person shooter games suffer from criticism because of this. Players can feel unfairly treated and forums discussing these issues become very popular with many thousands of views \cite{rout2013youtube} \cite{gkac2014gamefaqs} \cite{drift0r2013youtube} \cite{solaire2016reddit} \cite{ss2018reddit} \cite{hp2015bungie}.
 
@@ -255,36 +259,35 @@ In the interest of completeness, in $II.A.$ we mention network latency not succe
 
 \subsection{Representing level data}
 
-This project proposes that information pertinent to the level layout can be used to better predict an agent's behaviour, and more critically evaluate when to send update packets. As such, effectively storing and evaluating spatial information about the changes in motion of agents moving around a levelis paramount. 
+This project proposes that information pertinent to the level layout can be used to better predict an agent's behaviour, and more critically evaluate when to send update packets. As such, effectively storing and evaluating spatial information about the changes in motion of agents moving around a level is paramount. 
 
-As common to most games, AntReckoning assumes
-a game world divided into non overlapping cells,
-e.g., Delaunay triangulation, Voronoi tessellation, binary space
-partitioning, or regular grids.
+A heat map is a visual reflection of a statistical model \cite{wilkinson2009history} used often in games to graphically represent spatial analytics of player telemetry with colours, overlayed upon a traditional map of the level (see fig \ref{fig:hm1}). They are a tool to help extract patterns and knowledge which can be used to detect outlying data \cite{drachen2013spatial} (Apparent in fig \ref{fig:hm3} as single paths travelling perpendicular to the trend). To this end, as a tool, it meets our needs perfectly. Where interest modelling seeks to better predict a single entity's interest,
+our proposed method outlines a broadly applicable standard per level by using irrefutable information about the level to better avoid dead reckoning projecting a client's position into an unlikely or impossible location.
 
-\cite{bauckhage2014beyond}
+Heat maps are used in games for training bots to behave more realistically and improve map design during development \cite{bauckhage2014beyond} but to the best of our knowledge has not been applied to alter attraction forces in dead reckoning algorithms or alter the network update frequency.
 
-\cite{kuipers1978modeling}
+Unlike the path visualisation as shown in fig \ref{fig:hm2}, the direction of motion must be asymmetric. Consider that a player may jump down from a platform but be unable to get back onto it \cite{bauckhage2014beyond}. The data must also be stored as such that symmetric paths such as corridors must preserve a direction vector, so as opposite paths do not cumalate to a zero score. Our method relies on the idea that a perpendicular vector to the trend must be realised as countering the norm.
 
-\cite{wilkinson2009history}
-
-\cite{moumtzidou2013discovery}
-
-\cite{drachen2013spatial}
-
-map partitioning \cite{steed2003partitioning}
+Finally, the map must be partitioned in such a way that the information is relevant. Equal size cell partitioning can disproportionately accumulate several critical positions within, while other less dense cells may merely be a space of travel between key junctures \cite{steed2003partitioning}. It is impossible to declare equally important cell boundaries before collecting some data on the level so this project must rely upon extracting and analysing level data before formatting it into a state that the client side prediction algorithms can effectively use.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.9\linewidth]{Heatmap1.png}
-    \caption{Example of overlay analysis. A balance heatmap from the ``Molten'' map of the game \textit{Transformers: War for Cybertron}. Red areas indicate deaths and blue areas indicate kills. Image sourced from \cite{drachen2013spatial}.}
+    \caption{Example of overlay analysis. A balance heatmap from the ``Molten'' map from the game \textit{Transformers: War for Cybertron}. Red areas indicate deaths and blue areas indicate kills. Image sourced from \cite{drachen2013spatial}.}
     \label{fig:hm1}
 \end{figure}
 
 \begin{figure}[h]
     \centering
+    \includegraphics[width=0.9\linewidth]{Heatmap3.png}
+    \caption{980 player trajectories from the ``Arathi Basin'' battleground from the game \textit{World of Warcraft}. Red circles show strategic points and blue diamonds show graveyards which are used as spawn locations. Image sourced from \cite{miller2009avatar}.}
+    \label{fig:hm3}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
     \includegraphics[width=0.8\linewidth]{Heatmap2.png}
-    \caption{Representing spatial clustering. Image sourced from \cite{bauckhage2014beyond}.}
+    \caption{Representing spatial clustering and player movement in the ``Gael'' map from the game \textit{Unreal Tournament 2003}. Red areas show clustering behaviour. Image sourced from \cite{bauckhage2014beyond}.}
     \label{fig:hm2}
 \end{figure}
 
@@ -305,27 +308,6 @@ Unfavourable reactions from users about poor game state management show the impo
 
 It can take some time to get used to controlling an entity in a first person shooter. 
 
-
-All participants who went outside of the track 9 or more times during the 9 laps
-(not including the warm up lap) were excluded from the experiment. This resulted
-in 3 out of the 26 participants being excluded. The reason why very poor
-drivers were excluded was to not introduce noise into the statistics or include
-data from some one who wanted disrupt the experiment on purpose.
-Some of the fastest laps were completed in just over 16 seconds and some of
-the slowest, in about 30 seconds. It could have been good to also set a limit on
-how long a race was allowed to take before it was excluded. However, the slowest
-laps were already excluded because of the first criteria. Since no participant was
-observed deliberately driving slow or taking breaks during the experiment, a time
-limit was never introduced.
-
-As a reference to see how great the distances error would be if no prediction
-was performed, an algorithm that did not do any updates or prediction was
-implemented. The data read from the outdated node is simply passed on as the
-predicted position.
-
-This method takes the outdated position and adds the velocity multiplied by the
-latency. This way a linear prediction is made.
-
 \subsection{Hypothesis}
 
 
@@ -340,11 +322,11 @@ latency. This way a linear prediction is made.
 			& \textbf{Hypothesis}& \textbf{Null Hypothesis} & \textbf{Data Collection Source} \\ \hline
 			%
 			1 & Using bot behaviour in a level to build a vector map of aggregate changes in motion will form a representation of that level.
-			& Visualising path-finding has no effect on the percent of the level the participant explores.
+			& Not that.
 			& Game Data \\ \hline
 			%
 			1 & Using bot behaviour in a level to build a vector map of aggregate changes in motion will form a representation of that level.
-			& Visualising path-finding has no effect on the percent of the level the participant explores.
+			& Not that.
 			& Game Data \\ \hline
 			
 		\end{tabular}
@@ -368,6 +350,28 @@ latency. This way a linear prediction is made.
 
 % that's all folks
 \end{document}
+
+
+
+All participants who went outside of the track 9 or more times during the 9 laps
+(not including the warm up lap) were excluded from the experiment. This resulted
+in 3 out of the 26 participants being excluded. The reason why very poor
+drivers were excluded was to not introduce noise into the statistics or include
+data from some one who wanted disrupt the experiment on purpose.
+Some of the fastest laps were completed in just over 16 seconds and some of
+the slowest, in about 30 seconds. It could have been good to also set a limit on
+how long a race was allowed to take before it was excluded. However, the slowest
+laps were already excluded because of the first criteria. Since no participant was
+observed deliberately driving slow or taking breaks during the experiment, a time
+limit was never introduced.
+
+As a reference to see how great the distances error would be if no prediction
+was performed, an algorithm that did not do any updates or prediction was
+implemented. The data read from the outdated node is simply passed on as the
+predicted position.
+
+This method takes the outdated position and adds the velocity multiplied by the
+latency. This way a linear prediction is made.
 
 
 
