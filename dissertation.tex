@@ -62,7 +62,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Extending Client Side Prediction Methods in Networked Multiplayer First Person Shooter Games to Include Level Information}
+\title{Extending Client Side Prediction Methods in Networked Multiplayer First-Person Shooter Games to Include Level Information}
 %
 %
 % author name
@@ -80,7 +80,7 @@
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-This paper critically examines the effectiveness of the current methods of client side prediction in networked multiplayer digital games, specifically first person shooter games where the accuracy of each game agent's behaviour is critical to the player's experience. The de facto use of \textit{dead reckoning} is accepted as a standard tool to help minimise the number of required network updates, but its results can be error prone which are a detriment to the player's experience. This paper looks at the currently used dead reckoning algorithms and suggests using further data about the game state to provide a more accurate estimation of a game agent's location and behaviour at a future time. Information regarding the layout of a level is used influence acceleration factor in the dead reckoning algorithm and to dynamically alter the allowance threshold to better reflect an agent's behaviour at critical locations in the level by prompting an increased rate of player state updates.
+This paper critically examines the effectiveness of the current methods of client side prediction in networked multiplayer digital games, specifically first-person shooter games where the accuracy of each game agent's behaviour is critical to the player's experience. The de facto use of \textit{dead reckoning} is accepted as a standard tool to help minimise the number of required network updates, but its results can be error prone which are a detriment to the player's experience. This paper looks at the currently used dead reckoning algorithms and suggests using further data about the game state to provide a more accurate estimation of a game agent's location and behaviour at a future time. Information regarding the layout of a level is used influence acceleration factor in the dead reckoning algorithm and to dynamically alter the allowance threshold to better reflect an agent's behaviour at critical locations in the level by prompting an increased rate of player state updates.
 \end{abstract}
 
 \section{Introduction}
@@ -103,7 +103,7 @@ Previous papers in the context of games describe dead reckoning as a measure to 
 % It should be noted that not all networked multiplayer games suffer from latency problems. 
 %It is important to note that not all networked multiplayer games suffer from client side prediction problems.
 
-It should be noted that not all networked multiplayer games suffer from latency problems. For instance turn based games consider each client sequentially. Where there is no scope or benefit for a player to react immediately, no measures must be taken to account for problems incurred by some milliseconds lost in transmission. These issues are prevalent in fast paced competitive games such as racing games, or the first person shooter genre. This paper then bases its study upon the first person shooter game genre, sometimes referred to as \textit{twitch} shooters \cite{lee2015outatime}. The need to respond quickly to other clients' perceived actions is critical to the player experience, therefore it is crucial that those actions are shown as accurately as possible.
+It should be noted that not all networked multiplayer games suffer from latency problems. For instance turn based games consider each client sequentially. Where there is no scope or benefit for a player to react immediately, no measures must be taken to account for problems incurred by some milliseconds lost in transmission. These issues are prevalent in fast paced competitive games such as racing games, or the first-person shooter genre. This paper then bases its study upon the first-person shooter game genre, sometimes referred to as \textit{twitch} shooters \cite{lee2015outatime}. The need to respond quickly to other clients' perceived actions is critical to the player experience, therefore it is crucial that those actions are shown as accurately as possible.
 
 The research question that this paper addresses is: how can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved?
 
@@ -111,7 +111,7 @@ The research question that this paper addresses is: how can client side predicti
 
 This literature review first confirms the definition of client side prediction, the problems that it solves, and the trade off against absolute accuracy. Dead reckoning is explained and explored with a focus on the real world applications and techniques of its use within games. Finally, alternative methods of solving the the problems associated with network latency are explained and acknowledged.
 
-\subsection{Client side prediction}
+\subsection{Client side prediction} \label{clientSidePrediction}
 
 Networked multiplayer games are defined as sharing a game space between multiple clients \cite{diot1999distributed}. Each client holds a representation of that game space which it uses to display information to the user, and allows the user to change within the rules of the game. When elements or details of the agents of that game space are changed by a client's actions, the client assumes that the action is successful, performs that action on its own game state representation, then sends the action information to the network so as all other clients can update their own game space representation to reflect the performed action \cite{bernier2001latency}.
 
@@ -126,7 +126,7 @@ Network latency forms the primary bottleneck for online game performance with an
 
 Given the vast quantity and unreliable nature of the messages being sent \cite{cronin2001distributed}, packet loss must be planned for. The same dead reckoning methods used to account for network latency, and outlined in \textit{B.} can be used to replace missing packets of information, or application data units (ADUs) \cite{diot1999distributed} sometimes referred to as protocol data units (PDUs) \cite{dis1998ieee}, to supply a prediction of where the ADU's agent will ``most probably'' be at a given time.
 
-\subsection{Dead reckoning}
+\subsection{Dead reckoning} \label{deadReckoning}
 
 Dead reckoning methods are based on a navigational technique of estimating one’s position based on a known starting point and velocity \cite{smed2002aspects}. In the simplest implementation, we take the last position we received on the network, and project it forward in time with at its last known velocity \cite{murphy2011believable}.
 
@@ -137,7 +137,7 @@ Dead reckoning methods are based on a navigational technique of estimating one�
     \label{fig:dr1}
 \end{figure}
 
-This simple representation of projecting forward is correct if an agent has linear movement and constant velocity. However, agents in a first person shooter game often have complex non linear movements which will need to be checked for and accommodated. Real world applications of linear dead reckoning also suffer with having to account for unpredictable behaviour e.g. drift due to wind or wheel slippage \cite{chung2001accurate} \cite{ojeda2004experimental}. The techniques used for managing these behaviours are transferable to the problems of dead reckoning networked multiplayer game agents with complex behaviour.
+This simple representation of projecting forward is correct if an agent has linear movement and constant velocity. However, agents in a first-person shooter game often have complex non linear movements which will need to be checked for and accommodated. Real world applications of linear dead reckoning also suffer with having to account for unpredictable behaviour e.g. drift due to wind or wheel slippage \cite{chung2001accurate} \cite{ojeda2004experimental}. The techniques used for managing these behaviours are transferable to the problems of dead reckoning networked multiplayer game agents with complex behaviour.
 
 In 1983, with substantial support from the U.S. army, the Defense Advanced Research Projects Agency (DARPA) initiated the Simulator Networking (SIMNET) program which developed dead reckoning techniques to support a virtual world to train soldiers \cite{calvin1993simnet}. Their approach to networking solutions has been incorporated into the Distributed Interactive Simulation (DIS) standard which is now an IEEE standard \cite{dis1998ieee}. It outlines the use of a PDU to help dead reckoning handle complex behaviour \cite{mccarty1994virtual}. It is worth remembering however that DIS was designed for use by a small number of players (less than 50), and the inclusive PDU model can be criticised for holding too much redundant data \cite{henderson2001latency}.
  
@@ -166,7 +166,7 @@ Were this updated information used immediately, the modelled entity would appear
     \label{fig:dr3}
 \end{figure}
 
-\subsection{Implementation}
+\subsection{Implementation} \label{implementation}
 
 Reconciling deviations with projective velocity blending
 
@@ -209,7 +209,7 @@ Where $Q_t$ is the dead reckoned position at a specific time $T$ for an entity s
 \label{algo:pseudo}
 \end{algorithm}
 
-\subsection{Interest modelling}
+\subsection{Interest modelling} \label{interestModelling}
 
 The shortcomings of estimating a game agent's behaviour based solely upon motion dynamics are already recognised and attempts to address these problems with further information have been somewhat explored. The \textit{Donnybrook} protocol \cite{bharambe2008donnybrook} looks to increase the delay between packets up to seconds by leveraging human cognitive limitations to preferentially spend bandwidth capacity on information most important to the player's \textit{interest sets}. Similarly, Amir Yahyavi \textit{et al} successfully use identified points of interest to influence their dead reckoning algorithm, improving the accuracy by up to 30\% over traditional dead reckoning techniques \cite{yahyavi2011antreckoning}.
 
@@ -217,23 +217,23 @@ Yahyavi \textit{et al} propose the use of \textit{attraction forces}, derived fr
 
 The merit of Amir Yahyavi \textit{et al}'s work \cite{yahyavi2011antreckoning} \cite{yahyavi2013interest} recognising and proposing solutions to the problems of solely using traditional dead reckoning methods in games with client side prediction is acknowledged, and an inspiration for this project.
 
-\subsection{Adapting the acceptance threshold}
+\subsection{Adapting the acceptance threshold} \label{adaptingThreshold}
 
 As shown in algorithm \ref{algo:pseudo}, the condition that prompts a network update is that the difference in position between a client's own entity and the representation of that entity used by the network differ by more than a threshold amount. This amount can be visualised as an acceptance radius around the dead reckoned position as shown in fig \ref{fig:threshold}. Generally, dead reckoning algorithms employ a fixed threshold \cite{cai1999auto}. Related work that investigates changing this threshold amount depending on game state conditions decide the variance by considering the individual peer to peer relationships such as the distance between the entities. This \textit{relevance filtering} is reliant upon a \textit{radius of interest} \cite{rak1996evaluation}. The reasoning given is that distant entities are not likely to interact with each other so accuracy is not extremely important  \cite{cai1999auto} \cite{jaya2016combining}.
 
-This paper acknowledges this method's effectiveness in specific situations to reduce network updates. But, given the often edge to edge viewing range prevalent in many game first person shooter levels \cite{toby2014tobyscs} \cite{ziervogel2014nag} \cite{cod2018wikibo4}, this paper argues against its use in a general approach to improving client side prediction in first person shooter games.
+This paper acknowledges this method's effectiveness in specific situations to reduce network updates. But, given the often edge to edge viewing range prevalent in many game first-person shooter levels \cite{toby2014tobyscs} \cite{ziervogel2014nag} \cite{cod2018wikibo4}, this paper argues against its use in a general approach to improving client side prediction in first-person shooter games.
 
-To allow for edge to edge sight lines and the prevalent long range weapons available for use in first person shooter games, we can consider filtering for entities that are within that player’s potential field of sight \cite{cronin2001distributed}. However, this requires previous knowledge of all entity positions therefore a two pass approach would be needed to determine which entities would be affected by a state change, and then to update those clients. Also, care must be taken as even when entities are out of sight of each other, dead reckoning may predict a behaviour which results in the entities being revealed and the integrity of the game state will be compromised.
+To allow for edge to edge sight lines and the prevalent long range weapons available for use in first-person shooter games, we can consider filtering for entities that are within that player’s potential field of sight \cite{cronin2001distributed}. However, this requires previous knowledge of all entity positions therefore a two pass approach would be needed to determine which entities would be affected by a state change, and then to update those clients. Also, care must be taken as even when entities are out of sight of each other, dead reckoning may predict a behaviour which results in the entities being revealed and the integrity of the game state will be compromised.
 
 Roberts \textit{et al} propose that network update time should be factored into deciding the threshold limit value. Network limitations when presented with a large amount of packets may result in inconsistency for which additional updates are needed to rectify \cite{roberts2008bounding}. This shortcoming in a networked application is an important consideration. However, given the local prediction methods of this project, fall outside of this study. Were future work to lead to a networked experiment, and given the proposed increase in packets sent at critical junctures, the relevance of considering network shortfalls when calculating a dynamically changing threshold will be crucial.
 
-\subsection{Doppelg\"{a}ngers}
+\subsection{Doppelg\"{a}ngers} \label{doppelgangers}
 
-\textit{Doppelg\"{a}ngers} offer a promising alternative that will adhere to the game's rules and avoid impossible behaviour. Jeffrey Pang \textit{et al} discuss populating a client's game state representation with computer-controlled players known as \textit{bots}. Updates prompted by a threshold based system similar to that outlined in algorithm \ref{algo:pseudo} will contain \textit{guidance} for the artificial intelligence (AI) to rectify and better replicate the relevant representation \cite{pang2007scaling} \cite{bharambe2008donnybrook}. As most first person shooter games contain AI routines for single player modes, much of the work needed to guide a bot around a level has been done. Problems will occur if a bot representation decides that it will perform an action such as shoot at an enemy, whereas the actual behaviour does not. Questions arise such as should the bot then fire ``blanks'', and consideration must be given as to whether that action may inadvertently alert enemies to that entity's position? This approach shows considerable potential in providing possible and realistic representations of other clients' behaviours, but relies heavily upon accurately portraying and dynamically adjusting the bot's AI behaviour model. To configure the AI behaviour, neural networks can be trained and used to predict changes of the entity velocity \cite{mccoy2007multistep}. Jeffrey Pang \textit{et al} propose that a blending between an AI bot for non-critical behaviour e.g. outside of the client's focus, and conventional dead reckoning state updates for representations of entities within the player's focus will provide a satisfying result \cite{pang2007scaling}.
+\textit{Doppelg\"{a}ngers} offer a promising alternative that will adhere to the game's rules and avoid impossible behaviour. Jeffrey Pang \textit{et al} discuss populating a client's game state representation with computer-controlled players known as \textit{bots}. Updates prompted by a threshold based system similar to that outlined in algorithm \ref{algo:pseudo} will contain \textit{guidance} for the artificial intelligence (AI) to rectify and better replicate the relevant representation \cite{pang2007scaling} \cite{bharambe2008donnybrook}. As most first-person shooter games contain AI routines for single player modes, much of the work needed to guide a bot around a level has been done. Problems will occur if a bot representation decides that it will perform an action such as shoot at an enemy, whereas the actual behaviour does not. Questions arise such as should the bot then fire ``blanks'', and consideration must be given as to whether that action may inadvertently alert enemies to that entity's position? This approach shows considerable potential in providing possible and realistic representations of other clients' behaviours, but relies heavily upon accurately portraying and dynamically adjusting the bot's AI behaviour model. To configure the AI behaviour, neural networks can be trained and used to predict changes of the entity velocity \cite{mccoy2007multistep}. Jeffrey Pang \textit{et al} propose that a blending between an AI bot for non-critical behaviour e.g. outside of the client's focus, and conventional dead reckoning state updates for representations of entities within the player's focus will provide a satisfying result \cite{pang2007scaling}.
 
 This paper argues in favour of bot representations as both a method to decrease the frequency of network updates, and as a tool to extrapolate future behaviours. But, also acknowledges its dependency upon accurate player modelling techniques. Player modelling is an ongoing study in the field of games. Since the focus of this work is on dead reckoning in client side prediction we omit further details about AI modelling player behaviour, although we strongly consider this as future work in the field of client side prediction.
 
-\section{Discussion}
+\section{Discussion} \label{discussion}
 
 The two part purpose of client side prediction is to maintain an up to date game state for clients in the case of late or lost packets, and to use prediction algorithms to reduce required network updates. While the simplest dead reckoning algorithm provides a linear vector approximation based on velocity, we have shown above that interpolation and projective velocity blending can be used to smooth trajectories between state updates tending towards the correct representation.
 
@@ -241,15 +241,15 @@ Benjamin Kuipars states that the difficulty of a dead reckoning task should vary
 
 It is a fundamental requirement for believable games that the state transitions and corrections are smooth and believable, shown in figures as a curve tending towards the target rather than a jump. These curves are shown to be accurate when inferred from polynomial modelling based on the Lagrange or Taylor series \cite{hanawa2006proposal}. But require multiple states from which to extrapolate an approximation. Packet loss can be greatly detrimental to this approach. Small sample sizes combined with potentially erratic movement of game players will likely produce unlikely results. A solution would be to provide back up copies of previous states in each PDU to restore missing information. A technique already employed in Quake where the last three commands are also sent in each packet to compensate for lost packets \cite{cronin2001distributed}. James M. Van Verth and Lars M. Bishop provide a method to sample and project cubic bezier spline curves \cite{van2008essential} but these are shown to be slightly less accurate than the velocity blending technique shown above proposed by Curtiss Murphy \cite{murphy2011believable}. 
 
-Dead reckoning is an \textit{optimistic algorithm}. It assumes it is correct  and when it is not, it must adjust itself. It is apparent that the blending of this adjustment may result in compromising behaviour. Demonstrated in first person shooter games as appearing to other players in a vulnerable position outside of cover, or moving through an impenetrable area as defined by the game's movement rules. Consider the velocity blending method shown in fig \ref{fig:dr3} and (6). A player could turn instantaneously and the algorithm would apply unrealistic forces to create huge accelerations at arbitrary angles \cite{bernier2001latency}. Large inconsistencies due to extremely late updates may even lead to repairs requiring a state rollback which will cause more drastic position jumps \cite{cronin2002efficient}. The resulting movement shown by the red line in fig \ref{fig:dr3} may fall outside the rules of the game. Either passing through untraversable locations such as through walls or over gaps, or into unlikely locations according to the game's rules such as into a vulnerable position outside of cover. Many networked multiplayer first person shooter games suffer from criticism because of this. Players can feel unfairly treated and forums discussing these issues become very popular with many thousands of views \cite{rout2013youtube} \cite{gkac2014gamefaqs} \cite{drift0r2013youtube} \cite{solaire2016reddit} \cite{ss2018reddit} \cite{hp2015bungie}.
+Dead reckoning is an \textit{optimistic algorithm}. It assumes it is correct  and when it is not, it must adjust itself. It is apparent that the blending of this adjustment may result in compromising behaviour. Demonstrated in first-person shooter games as appearing to other players in a vulnerable position outside of cover, or moving through an impenetrable area as defined by the game's movement rules. Consider the velocity blending method shown in fig \ref{fig:dr3} and (6). A player could turn instantaneously and the algorithm would apply unrealistic forces to create huge accelerations at arbitrary angles \cite{bernier2001latency}. Large inconsistencies due to extremely late updates may even lead to repairs requiring a state rollback which will cause more drastic position jumps \cite{cronin2002efficient}. The resulting movement shown by the red line in fig \ref{fig:dr3} may fall outside the rules of the game. Either passing through untraversable locations such as through walls or over gaps, or into unlikely locations according to the game's rules such as into a vulnerable position outside of cover. Many networked multiplayer first-person shooter games suffer from criticism because of this. Players can feel unfairly treated and forums discussing these issues become very popular with many thousands of views \cite{rout2013youtube} \cite{gkac2014gamefaqs} \cite{drift0r2013youtube} \cite{solaire2016reddit} \cite{ss2018reddit} \cite{hp2015bungie}.
 
 The de facto method of dead reckoning entities' behaviours is a distributed approach that does not require a centralised server. Using a distributed approach is mandatory for many distributed virtual environments (DVEs) in order to avoid the well known problems of centralised systems such as increased latency, single-point-of-failure and lack of scalability \cite{mauve2000keep}. However, having a dedicated central authoritative server (or a single client nominated as such) means that if a client simulates different results than the server, the server’s results will eventually correct the client’s incorrect simulation \cite{bernier2001latency}.
 
-Laurent Gautier and Christophe Diot propose that late packets due to network latency may be accommodated by the client by introducing a local presentation delay to provide a consistent, distributed state \cite{gautier1998design}. Trailing state synchronisation is designed specifically for real-time multiplayer games, and achieves better responsiveness and scalability while maintaining near-perfect consistency \cite{cronin2001distributed}. However, these increase the application-level delay even more so. While this method termed \textit{time warp} is acceptable for their MiMaze maze navigation project, it is unsuitable for the fast paced style of first person shooter games.
+Laurent Gautier and Christophe Diot propose that late packets due to network latency may be accommodated by the client by introducing a local presentation delay to provide a consistent, distributed state \cite{gautier1998design}. Trailing state synchronisation is designed specifically for real-time multiplayer games, and achieves better responsiveness and scalability while maintaining near-perfect consistency \cite{cronin2001distributed}. However, these increase the application-level delay even more so. While this method termed \textit{time warp} is acceptable for their MiMaze maze navigation project, it is unsuitable for the fast paced style of first-person shooter games.
 
-In the interest of completeness, in $II.A.$ we mention network latency not succeeding due to a state conflict, where simultaneous conflicting actions are performed by multiple clients. In this case, the authoritative server, the client acting as such, or the game itself, must decide which state is the ``correct'' state and update all conflicting clients with that decision. Games will often invoke a small delay before critical moments e.g. a death animation, to allow conflicting states to resolve themselves before committing to a particular irreversible state. With this delay, the game can rollback to the correct state without the user experiencing a jarring state change \cite{mauve2000keep}.
+In the interest of completeness, in \ref{deadReckoning} we mention network latency not succeeding due to a state conflict, where simultaneous conflicting actions are performed by multiple clients. In this case, the authoritative server, the client acting as such, or the game itself, must decide which state is the ``correct'' state and update all conflicting clients with that decision. Games will often invoke a small delay before critical moments e.g. a death animation, to allow conflicting states to resolve themselves before committing to a particular irreversible state. With this delay, the game can rollback to the correct state without the user experiencing a jarring state change \cite{mauve2000keep}.
 
-\subsection{Representing level data}
+\subsection{Representing level data} \label{representingLevelData}
 
 \begin{figure}[h]
     \centering
@@ -283,7 +283,7 @@ Finally, the map must be partitioned in such a way that the information is relev
 
 Heat maps are used in games for training bots to behave more realistically and improve map design during development \cite{bauckhage2014beyond} but to the best of our knowledge have not been applied to alter attraction forces in dead reckoning algorithms or alter the network update frequency.
 
-\section{Evaluation}
+\section{Evaluation} \label{evaluation}
 
 The literature shows a broad approach to the trade off between network latency implications and accurately representing every entity's behaviour. Finding the balance between excessive network congestion and maintaining an accurate representation of the game state for all clients is a challenge faced by all networked multiplayer games. Dead reckoning methods are highly effective, but are solely concerned with an entity's predictable motion. Derivatives such as AntReckoning attempt to model a player's likely intention, although extending this player modelling to guide a bot representation can be rife with inaccuracy. It is apparent that when an assumption of a player's actions are incorrectly predicted, rolling back the game state can be a jarring and detrimental experience to the users.
 
@@ -293,19 +293,81 @@ Related work seeks to minimise the number of required updates and maintain an up
 
 Furthermore, changes in acceleration shown to be common in the entity's location (consider in a racing game, a player will slow down before a corner \cite{larsson2016movement}) can be combined with the last known acceleration value in the second order projection of motion ($C.$ (2)) in a similar manner to how AntReckoning combines attraction forces. This will attempt to preempt changes in acceleration in the direction suggested by the vector map.
 
-Unfavourable reactions from users about poor game state management show the importance of finding an effective solution to minimising client side prediction error, and forms the motivation for this project. While the focus of this project is on first person shooter games, any improvement to client side prediction accuracy will be applicable to other networked multiplayer games that rely upon client side predicton and dead reckoning to maintain an up to date state representation for all clients such as racing or sports games. Given that there has been opportunity to collect information on the level layout beforehand.
+Unfavourable reactions from users about poor game state management show the importance of finding an effective solution to minimising client side prediction error, and forms the motivation for this project. While the focus of this project is on first-person shooter games, any improvement to client side prediction accuracy will be applicable to other networked multiplayer games that rely upon client side predicton and dead reckoning to maintain an up to date state representation for all clients such as racing or sports games. Given that there has been opportunity to collect information on the level layout beforehand.
 
 \section{Methodology}
 
+The research question addressed in this project is: how can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved? The hypotheses drawn from this question are listed in Table 1.
 
+This project's hypotheses will be confirmed by comparing the projected model from the proposed method against that of a traditional dead reckoned approach. Given that client side prediction is concerned with periods of time of 100ms - 5 seconds (\ref{clientSidePrediction} \ref{deadReckoning}), several samples may be collected from a single participant's session. To compare our proposed method against the established industry standard method of dead reckoning, we look for a small effect size of 0.1. Were we to take 25 samples per session, an a-priori power analysis finds that 30 participants will be required. As outliers can have a negative effect on the accuracy of results from two-way repeated measures tests \cite{anova2018laerd}, we will increase this size to 35 participants, with the expectation that some outlying results may need to be discounted to avoid distorting the results. While this paper recognises that a purpose of client side prediction is to simulate what can often be unpredictable behaviour, this project's proposed method solely aims to better simulate predictable behaviour given the level layout, such as slowing down before critical junctures and eliminate impossible behaviour such as wall tunnelling. As acknowledged in section \ref{doppelgangers}, modelling unpredictable behaviour that extreme outlying results represent are best solved with player modelling, and is beyond the scope of this project.
 
+\subsection{Hypotheses} \label{hypothesis}
 
-Participants will be asked to agree to a consent form that will be displayed before the game and must be agreed to before the game is played. This will state that statistics about the play session will be recorded, but not which particular statistics as this may affect the participant's approach to the session and influence their choices causing unusual movement. Client side prediction attempts to work without the user's knowledge so this must also.
+\begin{table*}[h]
+	\centering
+	\caption{Hypotheses}
+	\label{table:hypothesis}
+	\def\arraystretch{1.5}
+	\begin{tabular}{|c|p{7cm}|p{7cm}|p{1.75cm}|}
+		\hline
+		& \textbf{Hypothesis}& \textbf{Null Hypothesis} & \textbf{Data Collection Source} \\ \hline
+		%
+		1 & Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold to prompt an increased rate of packet updates at critical junctures will result in a more accurate client side prediction model than a constant error threshold.
+		& Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold will not prompt an increased rate of packet updates at critical junctures.
+		& Game Data \\ \hline
+		%
+		2 & Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold to prompt a decreased rate of packet updates at non critical junctures will negligibly decrease the accuracy of the client side prediction model.
+		& Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold to prompt a decreased rate of packet updates at non critical junctures will significantly decrease the accuracy of the client side prediction model.
+		& Game Data \\ \hline
+		%
+		3 & Applying location specific direction trends derived from bot simulations to the acceleration factor in dead reckoning algorithms will provide a more accurate projected position at a future time than traditional dead reckoning algorithms.
+		& Applying location specific direction trends derived from bot simulations to the acceleration factor in dead reckoning algorithms will not provide a more accurate projected position at a future time than traditional dead reckoning algorithms.
+		& Game Data \\ \hline
+		
+	\end{tabular}
+\end{table*}
 
+Table \ref{table:hypothesis} shows the hypotheses that are tested in this experiment. Testing these hypotheses requires analysing the results of a standard dead reckoning implementation and the same algorithm amended to include derived level data to alter the algorithm's threshold value, and as an additional acceleration value for the projection of motion. As this requires human participants, ethics approval for this methodology will be sought from Falmouth University’s Research Ethics Board.
 
+\subsection{Forming direction trends}
 
+\subsection{Experiment}
+
+Participants will be given access to a level in a first person shooter game designed specifically for this project. For simplicity the level will be at a single height throughout. This will allow proof of concept and the ability to visualise the data by use of an overlay as shown in fig~\ref{fig:hm1} without introducing a height vector as shown in fig~\ref{fig:hm2}.
+
+Players will be told to move between waypoints appearing on the map with the least amount of deaths. These waypoints will be preset to give the project control as to what junctures the player encounters e.g. corners, corridors, and open spaces. Approaching these junctures will prompt the experiment to start a prediction event, from which the results will form a test sample.
+
+Enemies that pose a threat to the player's entity will take the form of fixed place turrets. These will be placed around the junctures to encourage a more cautious play style. The problems that users experience described in \ref{discussion} are often a result of client side prediction dead reckoning a future position past a safe area when they are still within cover. By encouraging cautious behaviour from participants, we attempt to recreate these problems. To this end, this experiment will not impose a time limit upon the play test.
+
+The number of deaths will not be used directly for statistical analysis as the project is solely concerned with movement data. Instead this will be used to identify and prune outlying participants in regards to engagement and familiarity with first-person shooter controls.
+
+Each entity's health amount will replenish after each juncture. This is essential in maintaining a consistent starting state for each prediction event. Considering the difference in movement between a player controlling a wounded entity and that of an entity with full health falls under player behaviour modelling and outside of the scope of this work.
+	
+\subsection{Participants}
+
+It can take some time to get used to controlling an entity in a first-person shooter. To avoid having to train participants on how to control an entity in a first person shooter. A screening criterion will be employed for potential participants which will require familiarity with first-person shooter controls. Misunderstanding or attempts to deceive this screening will become apparent as an outlying result when considering total deaths in the play test. The question will be: ``What is your experience of playing first-person shooter games?'' and will require an answer to be given on a slider from the value of ``none'' to ``extremely high''. This will feature in the starting sequence for the game and only participants that respond with ``none'' will not be permitted to continue.
+
+Participants will be randomly sampled from students studying game development related courses at Falmouth University.
+
+Participants will be asked to agree to a consent form that will be displayed before the game and must be agreed to before the game is played. This will state that statistics about the play session will be recorded, but not which particular statistics to avoid confirmation bias from participants causing unusual movement. Instead, given the context of the game, the apparent goal will be to navigate between the waypoints without dying from enemy entity attacks, replicating how they would move between positions in a competitive multiplayer scenario.
+
+-------------------------
 
 Stage 0 - Build exp
+
+open areas/corridors
+
+control with choke points. Can define/confine data gathering checkpoints
+
+design level not atypical. Don't design a rat maze. natural level and goals will drive player to act naturally/vise versa. No ... bias
+
+Describe how to build level that doesn't bias.
+
+Robust!
+
+This is broad what need to do
+
+This is broad what to consider when/before doing
 
 -----------------------
 
@@ -343,77 +405,9 @@ Test against identical DR method without
 
 -----------------------
 
-\subsection{Participants}
-
-It can take some time to get used to controlling an entity in a first person shooter. To avoid ... bias
-
-will pass a screening criterion
-
-familiar with controls
-experience of playing fps games
-
-\subsection{Experiment}
-
-Players are told to move between from waypoint to waypoint with the least amount of deaths. Multiple deaths in a section will be discounted as they will indicate 
-
-Games are a means for fun and we expect the participant to have fun traversing the level
-
-A series (10) of preset way points that the participant is told to move to. Enemies in the form of ... will be present to discourage direct movement and encourage cautious movement as they would in an online competitive scenario.
-
-Players will be informed that their total deaths will be tallied. These will actually be used to measure skill / comfort / engagement. Whereas the data this project is concerned with is the movement data and it's correlation to a traditional DR and our proposed DR running in the background
-
-Simulate a score of deaths to avoid ... bias. Players will be encouraged to not die to stop simply running through a level and encourage cautious movement
-
-each waypoint will reset health, and respawn enemies so as each waypoint can be considered a seperate event
-
-A power analysis using G*Power shows the need for a minimum sample size of 788.
-
-two tailed T test looking for 5\% false positive, 20\% false negative
-
-
-
 Remember to go into a lot of detail as to who your sample will be such as ages and such.
 
-I'm sure there will be ethic issues if you have human participants.
-
 Consent, health and safety etc
-
-Would random sampling be a better participant collection method? Word of mouth seems lax.
-
-Ethics Form
-
-Consent form
-
-
-
-
-\subsection{Hypotheses:} \label{hypothesis}
-\begin{table*}[h]
-	\centering
-	\caption{Hypotheses}
-	\label{table:Hypothesis}
-	\def\arraystretch{1.5}
-	\begin{tabular}{|c|p{7cm}|p{7cm}|p{1.75cm}|}
-		\hline
-		& \textbf{Hypothesis}& \textbf{Null Hypothesis} & \textbf{Data Collection Source} \\ \hline
-		%
-		1 & Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold to prompt an increased rate of packet updates at critical junctures will result in a more accurate client side prediction model than a constant error threshold.
-		& Not that.
-		& Game Data \\ \hline
-		%
-		2 & Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold to prompt an decreased rate of packet updates at non critical junctures will negligibly affect the client side prediction model.
-		& Not that.
-		& Game Data \\ \hline
-		%
-		3 & Applying location specific direction trends derived from bot simulations to the acceleration factor in dead reckoning algorithms will provide a more accurate projected position at a future time than traditional dead reckoning algorithms.
-		& Not that.
-		& Game Data \\ \hline
-		
-	\end{tabular}
-\end{table*}
-Table~\ref{table:Hypothesis} shows the hypotheses that are tested in this experiment. Testing these hypotheses requires analysing the results of a standard dead reckoning implementation and the same algorithm amended to include derived level data to alter the algorithm's threshold value, and as an additional acceleration value for the projection of motion. As this required human participants, ethics approval for this methodology was gained from Falmouth University’s Research Ethics Board.
-	
-
 
 % references section
 
@@ -429,7 +423,7 @@ Table~\ref{table:Hypothesis} shows the hypotheses that are tested in this experi
 % that's all folks
 \end{document}
 
-
+\footnote[2]{R Available at: https://www.r-project.org/}
 
 All participants who went outside of the track 9 or more times during the 9 laps
 (not including the warm up lap) were excluded from the experiment. This resulted
