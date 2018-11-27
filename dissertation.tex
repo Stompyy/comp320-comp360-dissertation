@@ -310,7 +310,7 @@ This project's hypotheses will be confirmed by comparing the projected model fro
 	\def\arraystretch{1.5}
 	\begin{tabular}{|c|p{7cm}|p{7cm}|p{1.75cm}|}
 		\hline
-		& \textbf{Hypothesis}& \textbf{Null Hypothesis} & \textbf{Data Collection Source} \\ \hline
+		& \textbf{Hypothesis}& \textbf{Null Hypothesis} & \textbf{Data Source} \\ \hline
 		%
 		1 & Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold to prompt an increased rate of packet updates at critical junctures will result in a more accurate client side prediction model than a constant error threshold.
 		& Using location specific direction trends derived from bot simulations to adjust the dead reckoning error threshold will not prompt an increased rate of packet updates at critical junctures.
@@ -323,15 +323,36 @@ This project's hypotheses will be confirmed by comparing the projected model fro
 		3 & Applying location specific direction trends derived from bot simulations to the acceleration factor in dead reckoning algorithms will provide a more accurate projected position at a future time than traditional dead reckoning algorithms.
 		& Applying location specific direction trends derived from bot simulations to the acceleration factor in dead reckoning algorithms will not provide a more accurate projected position at a future time than traditional dead reckoning algorithms.
 		& Game Data \\ \hline
-		
 	\end{tabular}
 \end{table*}
+
+\begin{align}
+        & \text{1) Confidence-based threshold adjustment} \nonumber \\
+        \nonumber \\
+        C & = | {V_b} \cdot {D_p} | \\
+        \eta_p & = {\eta_{min}} + ({\eta_{max}} - {\eta_{min}}) C \\
+        \nonumber \\
+        & \text{2) Trend-based acceleration adjustment} \nonumber \\
+        \nonumber \\
+        A_p & = \frac{{A'_0} + {A_p}}{2} \\
+        P_t & = P_0 + {V_b}{T_t} + \frac{1}{2} {A_p} {T_t^2}
+\end{align} 
+
+Where $C$ is the confidence value of the prediction threshold. $D_p$ is the direction trend at a position $P$ in the level. $\eta_p$ is the threshold at position $P$. $\eta_{min}$ is the constant minimum threshold allowed by the game. $\eta_{max}$ is the constant maximum threshold allowed by the game. $A_p$ is the acceleration trend at position $P$, and $A_p$ is the adjusted acceleration value for the entity at position $P$. \\ \\
+1) \\
+(7) Uses the absolute value of the dot product of the blended velocity model shown in (3), and the direction trend for the entity's position in the level. This gives a confidence value between $0 - 1$ that returns $0$ if $V_b$ is perpendicular to $D_p$ and returns $1$ if $V_b$ is parallel to $D_p$. \\
+(8) Uses the confidence value $C$ to return a threshold amount for the entity at position $P$. The returned threshold amount is blended between $\eta_{min}$ and $\eta_{max}$ by the confidence value $C$. \\ \\
+2) \\
+(9) Averages the last known acceleration value and the acceleration trend for the entity's position in the level. \\
+(10) Takes the simulation projection equation (4) and substitutes $A'_0$ for the informed acceleration model $A_p$. \\ 
 
 Table \ref{table:hypothesis} shows the hypotheses that are tested in this experiment. Testing these hypotheses requires analysing the results of a standard dead reckoning implementation and the same algorithm amended to include derived level data to alter the algorithm's threshold value, and as an additional acceleration value for the projection of motion. As this requires human participants, ethics approval for this methodology will be sought from Falmouth University’s Research Ethics Board.
 
 \subsection{Forming direction trends}
 
-\subsection{Experiment}
+At the heart of this paper's proposed method 
+
+\subsection{Testing the hypotheses}
 
 Participants will be given access to a level in a first person shooter game designed specifically for this project. For simplicity the level will be at a single height throughout. This will allow proof of concept and the ability to visualise the data by use of an overlay as shown in fig~\ref{fig:hm1} without introducing a height vector as shown in fig~\ref{fig:hm2}.
 
