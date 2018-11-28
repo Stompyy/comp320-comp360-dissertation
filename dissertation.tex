@@ -299,7 +299,7 @@ Unfavourable reactions from users about poor game state management show the impo
 
 The research question addressed in this project is: how can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved? The hypotheses drawn from this question are listed in Table 1.
 
-This project's hypotheses will be confirmed by comparing the projected model from the proposed method against that of a traditional dead reckoned approach. Given that client side prediction is concerned with periods of time of 100ms - 5 seconds (\ref{clientSidePrediction} \ref{deadReckoning}), several samples may be collected from a single participant's session. To compare our proposed method against the established industry standard method of dead reckoning, we look for a small effect size of 0.1. Were we to take 25 samples per session, an a-priori power analysis finds that 30 participants will be required. As outliers can have a negative effect on the accuracy of results from two-way repeated measures tests \cite{anova2018laerd}, we will increase this size to 35 participants, with the expectation that some outlying results may need to be discounted to avoid distorting the results. While this paper recognises that a purpose of client side prediction is to simulate what can often be unpredictable behaviour, this project's proposed method solely aims to better simulate predictable behaviour given the level layout, such as slowing down before critical junctures and eliminate impossible behaviour such as wall tunnelling. As acknowledged in section \ref{doppelgangers}, modelling unpredictable behaviour that extreme outlying results represent are best solved with player modelling, and is beyond the scope of this project.
+This project's hypotheses will be confirmed by comparing the projected model from the proposed method against that of a traditional dead reckoned approach. Given that client side prediction is concerned with periods of time of 100ms - 5 seconds (\ref{clientSidePrediction} \ref{deadReckoning}), several samples may be collected from a single participant's session. To compare our proposed method against the established industry standard method of dead reckoning, we look for a small effect size of 0.1. Were we to take 25 samples per session, an a-priori power analysis finds that 30 participants will be required. As outliers can have a negative effect on the accuracy of results from two-way repeated measures tests \cite{anova2018laerd}, we will increase this size to 35 participants, with the expectation that some outlying results may need to be discounted to avoid distorting the results. While this paper recognises that a purpose of client side prediction is to simulate what can often be unpredictable behaviour, this project's proposed method solely aims to better simulate predictable behaviour given the level layout, such as slowing down before critical junctures and eliminate impossible behaviour such as wall tunnelling. As acknowledged in section \ref{doppelgangers}, simulating unpredictable behaviour that extreme outlying results represent is best solved with player modelling, and is beyond the scope of this project.
 
 \subsection{Hypotheses} \label{hypothesis}
 
@@ -327,30 +327,61 @@ This project's hypotheses will be confirmed by comparing the projected model fro
 \end{table*}
 
 \begin{align}
+        C & = {V_b} \cdot {D_p} \\
+        \nonumber \\
         & \text{1) Confidence-based threshold adjustment} \nonumber \\
         \nonumber \\
-        C & = | {V_b} \cdot {D_p} | \\
-        \eta_p & = {\eta_{min}} + ({\eta_{max}} - {\eta_{min}}) C \\
+        \eta_p & = {\eta_{min}} + ({\eta_{max}} - {\eta_{min}}) |C| \\
         \nonumber \\
         & \text{2) Trend-based acceleration adjustment} \nonumber \\
         \nonumber \\
-        A_p & = \frac{{A'_0} + {A_p}}{2} \\
-        P_t & = P_0 + {V_b}{T_t} + \frac{1}{2} {A_p} {T_t^2}
+        A_t & = \frac{{A'_0} + C {A_p}}{2} \\
+        P_t & = P_0 + {V_b}{T_t} + \frac{1}{2} {A_t} {T_t^2}
 \end{align} 
 
-Where $C$ is the confidence value of the prediction threshold. $D_p$ is the direction trend at a position $P$ in the level. $\eta_p$ is the threshold at position $P$. $\eta_{min}$ is the constant minimum threshold allowed by the game. $\eta_{max}$ is the constant maximum threshold allowed by the game. $A_p$ is the acceleration trend at position $P$, and $A_p$ is the adjusted acceleration value for the entity at position $P$. \\ \\
-1) \\
-(7) Uses the absolute value of the dot product of the blended velocity model shown in (3), and the direction trend for the entity's position in the level. This gives a confidence value between $0 - 1$ that returns $0$ if $V_b$ is perpendicular to $D_p$ and returns $1$ if $V_b$ is parallel to $D_p$. \\
-(8) Uses the confidence value $C$ to return a threshold amount for the entity at position $P$. The returned threshold amount is blended between $\eta_{min}$ and $\eta_{max}$ by the confidence value $C$. \\ \\
-2) \\
-(9) Averages the last known acceleration value and the acceleration trend for the entity's position in the level. \\
-(10) Takes the simulation projection equation (4) and substitutes $A'_0$ for the informed acceleration model $A_p$. \\ 
+Where $C$ is the correlation value between the motion and the trend. $D_p$ is the direction trend at a position $P$ in the level. $\eta_p$ is the error threshold allowed at position $P$. $\eta_{min}$ is the constant minimum threshold allowed by the game. $\eta_{max}$ is the constant maximum threshold allowed by the game. $A_p$ is the acceleration trend at position $P$, and $A_t$ is the adjusted predicted acceleration value for the entity at position $P$. \\
+\\
+(7) Declares the dot product of the blended velocity model shown in (3), and the direction trend for the entity's position in the level as a correlation score between the simulation and the data trend. \\
+(8) Uses the absolute value of the correlation amount $C$ as a confidence value, to return a threshold amount for the entity at position $P$. The returned threshold amount is blended between $\eta_{min}$ and $\eta_{max}$ by the $0 - 1$ confidence value of $|C|$. \\
+\\
+(9) Calculates an informed acceleration value $A_t$ which combines the last known acceleration value and the acceleration trend for the entity's position in the level, multiplied by the correlation score. \\
+(10) Takes the simulation projection equation (4) and substitutes $A'_0$ for the informed acceleration model $A_t$. \\ 
 
 Table \ref{table:hypothesis} shows the hypotheses that are tested in this experiment. Testing these hypotheses requires analysing the results of a standard dead reckoning implementation and the same algorithm amended to include derived level data to alter the algorithm's threshold value, and as an additional acceleration value for the projection of motion. As this requires human participants, ethics approval for this methodology will be sought from Falmouth University’s Research Ethics Board.
 
-\subsection{Forming direction trends}
+\subsection{level design considerations}
 
-At the heart of this paper's proposed method 
+Robust
+
+open areas/corridors
+
+control with choke points. Can define/confine data gathering checkpoints
+
+design level not atypical. Don't design a rat maze. natural level and goals will drive player to act naturally/vise versa. No ... bias
+
+Describe how to build level that doesn't bias.
+
+This is broad what need to do
+
+This is broad what to consider when/before doing
+
+describe game - Unity? UE4?
+
+\subsection{Finding trends}
+
+At the heart of this paper's proposed method ...
+
+describe data collection method
+
+storage method
+
+Use different bots?
+
+visualisation
+
+cull outlier data or keep in for full representation or will there be no outlier data? will all data be relevant as relate to possible paths?
+
+how to map partitioning data
 
 \subsection{Testing the hypotheses}
 
@@ -373,48 +404,6 @@ Participants will be randomly sampled from students studying game development re
 Participants will be asked to agree to a consent form that will be displayed before the game and must be agreed to before the game is played. This will state that statistics about the play session will be recorded, but not which particular statistics to avoid confirmation bias from participants causing unusual movement. Instead, given the context of the game, the apparent goal will be to navigate between the waypoints without dying from enemy entity attacks, replicating how they would move between positions in a competitive multiplayer scenario.
 
 -------------------------
-
-Stage 0 - Build exp
-
-open areas/corridors
-
-control with choke points. Can define/confine data gathering checkpoints
-
-design level not atypical. Don't design a rat maze. natural level and goals will drive player to act naturally/vise versa. No ... bias
-
-Describe how to build level that doesn't bias.
-
-Robust!
-
-This is broad what need to do
-
-This is broad what to consider when/before doing
-
------------------------
-
-Stage 1 - collect data
-
-describe game - Unity? UE4?
-
-describe data collection method
-
-storage method
-
-Use different bots?
-
-------------------------
-
-Stage 2 - analyse data
-
-visualisation
-
-cull outlier data or keep in for full representation or will there be no outlier data? will all data be relevant as relate to possible paths?
-
-how to map partitioning data
-
-------------------------
-
-stage 3 - using the data
 
 Hypothesis testing
 
