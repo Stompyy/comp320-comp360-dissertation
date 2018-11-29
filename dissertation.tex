@@ -293,7 +293,7 @@ Furthermore, changes in acceleration shown to be common in the entity's location
 
 Unfavourable reactions from users about poor game state management show the importance of finding an effective solution to minimising client side prediction error, and forms the motivation for this project. While the focus of this project is on first-person shooter games, any improvement to client side prediction accuracy will be applicable to other networked multiplayer games that rely upon client side prediction and dead reckoning to maintain an up to date state representation for all clients such as racing or sports games. Given that there has been opportunity to collect information on the level layout beforehand.
 
-\section{Methodology}
+\section{Research methodology}
 
 The research question addressed in this project is: how can client side prediction in networked multiplayer first-person shooter games that use dead reckoning be improved? The hypotheses drawn from this question are listed in Table 1.
 
@@ -344,9 +344,9 @@ Where $C$ is the correlation value between the motion and the trend. $D_p$ is th
 (9) Calculates an informed acceleration value $A_t$ as the mean of the last known acceleration value and the acceleration trend for the entity's position in the level, multiplied by the correlation score. i.e. a correlation value of $0$ will return half of the last known acceleration. \\
 (10) Takes the simulation projection equation (4) and substitutes $A'_0$ for the informed acceleration model $A_t$. \\ 
 
-Table \ref{table:hypothesis} shows the hypotheses that are tested in this experiment. Testing these hypotheses requires analysing the results of a standard dead reckoning implementation and the same algorithm amended to include derived level data to alter the algorithm's threshold value, and as an additional acceleration value for the projection of motion. As this requires human participants, ethics approval for this methodology will be sought from Falmouth University’s Research Ethics Board.
+Table \ref{table:hypothesis} shows the hypotheses that are tested in this experiment. Equations (7) - (10) show the implementation of the hypotheses by amending the dead reckoning implementation as described in \ref{implementation}. Testing these hypotheses requires analysing the results of a standard dead reckoning implementation and the same algorithm amended to include derived level data to alter the algorithm's threshold value, and as an additional acceleration value for the projection of motion. As this requires human participants, ethics approval for this methodology will be sought from Falmouth University’s Research Ethics Board.
 
-\subsection{Level design considerations}
+\section{Design of the research artefact}
 
 Participants will be given access to a level in a first person shooter game designed specifically for this project. For simplicity the level will be at a single height throughout. This will allow proof of concept and the ability to visualise the data by use of an overlay as shown in fig~\ref{fig:hm1} without introducing a height vector as shown in fig~\ref{fig:hm2}.
 
@@ -354,7 +354,7 @@ To be considered a broadly applicable method, this project must test the hypothe
 
 To maintain control over when the prediction events start and end, narrow sections termed as \textit{choke points} will be used to set the participant's controlled entity to a default state suitable for prediction. These will be used to define the angle at which a corner is approached, or from which edge a large room is entered. This must be carefully leveraged against building a typical level that the participant would expect to see in a game. Were the level to resemble a maze, it is reasonable to assume that the participant would move though that level differently to how they would move through a competitive multiplayer environment for which this client side prediction method would ultimately be used. The level and the player then should aesthetically resemble a networked multiplayer first-person shooter environment to encourage the participant to behave within it as such.
 
-The game will be built in Unreal Engine 4.21.0\footnote[1]{Unreal Engine 4.21.0: https://www.unrealengine.com/en-US/feed} using the Paragon assets\footnote[2]{Paragon Assets: https://www.unrealengine.com/marketplace/assets?lang=&q =Paragon}. This is due to the project's familiarity with the software, and the professional quality and free use license of the asset pack.
+The game will be built in Unreal Engine 4.21.0\footnote[1]{Unreal Engine 4.21.0: https://www.unrealengine.com/en-US/feed} using the Paragon assets\footnote[2]{Paragon Assets: https://www.unrealengine.com/marketplace/assets?lang=&q =Paragon}. This is due to the project's familiarity with the software, and the professional quality and free use license of the asset pack. The game will be playable on a desktop computer using a mouse and keybord as controls. These controls will mirror the existing standard layout of first-person shooters.
 
 \subsection{Finding trends}
 
@@ -366,7 +366,7 @@ This data will be then visualised using a heat map overlay to determine and excl
 
 \subsection{Testing the hypotheses}
 
-Players will be told to move between waypoints appearing on the map with the least amount of deaths. These waypoints will be preset to give the project control as to what junctures the player encounters e.g. corners, corridors, and open spaces. Approaching these junctures will prompt the experiment to start a prediction event, from which the results will form a test sample.
+Participants will be told to move between waypoints appearing on the map with the least amount of deaths. These waypoints will be preset to give the project control as to what junctures the player encounters e.g. corners, corridors, and open spaces. Approaching these junctures will prompt the experiment to start a prediction event, from which the results will form a test sample.
 
 Enemies that pose a threat to the player's entity will take the form of fixed place turrets. These will be placed around the junctures to encourage a more cautious play style. The problems that users experience described in \ref{discussion} are often a result of client side prediction dead reckoning a future position past a safe area when they are actually still within cover. By encouraging cautious behaviour from participants, we attempt to recreate these problems. To this end, this experiment will not impose a time limit upon the play test.
 
